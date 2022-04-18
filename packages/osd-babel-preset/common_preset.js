@@ -33,6 +33,7 @@
 const plugins = [
   require.resolve('babel-plugin-add-module-exports'),
 
+  [require.resolve('@babel/plugin-proposal-decorators'), {legacy: true}],
   // The class properties proposal was merged with the private fields proposal
   // into the "class fields" proposal. Babel doesn't support this combined
   // proposal yet, which includes private field, so this transform is

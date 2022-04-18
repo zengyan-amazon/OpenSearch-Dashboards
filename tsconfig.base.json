@@ -57,6 +57,7 @@
       "flot",
       "jest-styled-components",
       "@testing-library/jest-dom"
-    ]
+    ],
+    "experimentalDecorators": true
   }
 }

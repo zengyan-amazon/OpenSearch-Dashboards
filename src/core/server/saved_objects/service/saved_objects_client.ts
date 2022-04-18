@@ -41,6 +41,7 @@ import {
   SavedObjectsFindOptions,
 } from '../types';
 import { SavedObjectsErrorHelpers } from './lib/errors';
+import { encryptionDecorator, logDecorator } from './decorator';
 
 /**
  *
@@ -301,6 +302,7 @@ export class SavedObjectsClient {
    * @param attributes
    * @param options
    */
+  @encryptionDecorator
   async create<T = unknown>(type: string, attributes: T, options?: SavedObjectsCreateOptions) {
     return await this._repository.create(type, attributes, options);
   }
@@ -311,6 +313,7 @@ export class SavedObjectsClient {
    * @param objects
    * @param options
    */
+  @encryptionDecorator
   async bulkCreate<T = unknown>(
     objects: Array<SavedObjectsBulkCreateObject<T>>,
     options?: SavedObjectsCreateOptions
@@ -348,7 +351,9 @@ export class SavedObjectsClient {
    *
    * @param options
    */
+  // @testDecorator
   async find<T = unknown>(options: SavedObjectsFindOptions): Promise<SavedObjectsFindResponse<T>> {
+    // console.log("In find funciton");
     return await this._repository.find(options);
   }
 
@@ -377,11 +382,14 @@ export class SavedObjectsClient {
    * @param id - The ID of the SavedObject to retrieve
    * @param options
    */
+  // @testDecorator
+  @logDecorator
   async get<T = unknown>(
     type: string,
     id: string,
     options: SavedObjectsBaseOptions = {}
   ): Promise<SavedObject<T>> {
+    console.log("In get funciton");
     return await this._repository.get(type, id, options);
   }
 

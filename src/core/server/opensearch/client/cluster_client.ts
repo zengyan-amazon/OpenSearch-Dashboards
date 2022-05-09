@@ -33,13 +33,16 @@
 import { Client } from '@elastic/elasticsearch';
 import { Logger } from '../../logging';
 import { GetAuthHeaders, Headers, isOpenSearchDashboardsRequest, isRealRequest } from '../../http';
-import { ensureRawRequest, filterHeaders } from '../../http/router';
+import { ensureRawRequest, filterHeaders, OpenSearchDashboardsRequest } from '../../http/router';
 import { ScopeableRequest } from '../types';
 import { OpenSearchClient } from './types';
 import { configureClient } from './configure_client';
 import { OpenSearchClientConfig } from './client_config';
 import { ScopedClusterClient, IScopedClusterClient } from './scoped_cluster_client';
 import { DEFAULT_HEADERS } from '../default_headers';
+import { DataSourceClusterClient } from './data_source_client';
+import { IDataSourceClusterClient } from '.';
+import { SavedObjectsClientContract } from '../../types';
 
 const noop = () => undefined;
 
@@ -59,6 +62,11 @@ export interface IClusterClient {
    * Creates a {@link IScopedClusterClient | scoped cluster client} bound to given {@link ScopeableRequest | request}
    */
   asScoped: (request: ScopeableRequest) => IScopedClusterClient;
+
+  asDataSource: (
+    request: OpenSearchDashboardsRequest,
+    savedObjectsClient: SavedObjectsClientContract
+  ) => Promise<IDataSourceClusterClient>;
 }
 
 /**
@@ -78,6 +86,7 @@ export interface ICustomClusterClient extends IClusterClient {
 export class ClusterClient implements ICustomClusterClient {
   public readonly asInternalUser: Client;
   private readonly rootScopedClient: Client;
+  private readonly rootDataSourceClient: Client;
 
   private isClosed = false;
 
@@ -88,6 +97,8 @@ export class ClusterClient implements ICustomClusterClient {
   ) {
     this.asInternalUser = configureClient(config, { logger });
     this.rootScopedClient = configureClient(config, { logger, scoped: true });
+    // TODO: explore If we can just use asInternalUser instead
+    this.rootDataSourceClient = configureClient(config, { logger, scoped: true });
   }
 
   asScoped(request: ScopeableRequest) {
@@ -98,12 +109,52 @@ export class ClusterClient implements ICustomClusterClient {
     return new ScopedClusterClient(this.asInternalUser, scopedClient);
   }
 
+  async asDataSource(
+    request: OpenSearchDashboardsRequest,
+    savedObjectsClient: SavedObjectsClientContract
+  ) {
+    const dataHeaders = this.getScopedHeaders(request);
+    console.log('zhongnan print header');
+    console.log(dataHeaders);
+
+    // TODO: question -> 1. declare cleaner interface for request with datasource? 2.how do we do a performance test?
+
+    // 1. fetch meta info of data source using saved_object client
+    const dataSource = request.body.dataSource
+      ? await savedObjectsClient.get('data-source', request.body.dataSource)
+      : undefined;
+
+    console.log('zhongnan as Datasource');
+    console.log(JSON.stringify(dataSource));
+
+    const dataSourceObj = dataSource!.attributes as any;
+    const url = dataSourceObj.endpoint.url;
+    const username = dataSourceObj.endpoint.credentials.username;
+    const password = dataSourceObj.endpoint.credentials.password;
+
+    // 2. create dataSourceClient and return
+    const dataSourceClient = this.rootDataSourceClient.child({
+      headers: dataHeaders,
+      node: url,
+      auth: {
+        username,
+        password,
+      },
+    });
+
+    return new DataSourceClusterClient(dataSourceClient);
+  }
+
   public async close() {
     if (this.isClosed) {
       return;
     }
     this.isClosed = true;
-    await Promise.all([this.asInternalUser.close(), this.rootScopedClient.close()]);
+    await Promise.all([
+      this.asInternalUser.close(),
+      this.rootScopedClient.close(),
+      this.rootDataSourceClient.close(),
+    ]);
   }
 
   private getScopedHeaders(request: ScopeableRequest): Headers {
@@ -119,6 +170,10 @@ export class ClusterClient implements ICustomClusterClient {
         'x-opaque-id',
         ...this.config.requestHeadersWhitelist,
       ]);
+      // Zhongnan change
+      // scopedHeaders = filterHeaders({ ...requestHeaders, ...authHeaders }, [
+      //   ...this.config.requestHeadersWhitelist,
+      // ]);
     } else {
       scopedHeaders = filterHeaders(request?.headers ?? {}, this.config.requestHeadersWhitelist);
     }

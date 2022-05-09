@@ -32,6 +32,7 @@
 
 export * from './types';
 export { IScopedClusterClient, ScopedClusterClient } from './scoped_cluster_client';
+export { IDataSourceClusterClient, DataSourceClusterClient } from './data_source_client';
 export { OpenSearchClientConfig } from './client_config';
 export { IClusterClient, ICustomClusterClient, ClusterClient } from './cluster_client';
 export { configureClient } from './configure_client';

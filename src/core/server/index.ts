@@ -87,6 +87,7 @@ import {
   CoreEnvironmentUsageData,
   CoreServicesUsageData,
 } from './core_usage_data';
+import { IClusterClient, IDataSourceClusterClient } from './opensearch/client';
 
 export { CoreUsageData, CoreConfigUsageData, CoreEnvironmentUsageData, CoreServicesUsageData };
 
@@ -406,6 +407,7 @@ export interface RequestHandlerContext {
       legacy: {
         client: ILegacyScopedClusterClient;
       };
+      dataSourceClient: Promise<IDataSourceClusterClient>;
     };
     uiSettings: {
       client: IUiSettingsClient;

@@ -73,27 +73,36 @@ export const extOpensearchSearchStrategyProvider = (
       try {
         // logger.info(JSON.stringify(params));
         // logger.info(JSON.stringify(request.dataSource));
-        const dataSource = request.dataSource ? await context.core.savedObjects.client.get('data-source', request.dataSource) : undefined;
-        logger.info(JSON.stringify(dataSource));
-        const dataSourceObj = dataSource!.attributes as any;
-        const url = dataSourceObj.endpoint.url;
-        const username = dataSourceObj.endpoint.credentials.username;
-        const password = dataSourceObj.endpoint.credentials.password;
+        // const dataSource = request.dataSource
+        //   ? await context.core.savedObjects.client.get('data-source', request.dataSource)
+        //   : undefined;
+        // logger.info(JSON.stringify(dataSource));
+        // const dataSourceObj = dataSource!.attributes as any;
+        // const url = dataSourceObj.endpoint.url;
+        // const username = dataSourceObj.endpoint.credentials.username;
+        // const password = dataSourceObj.endpoint.credentials.password;
         // logger.info(JSON.stringify(url));
         // logger.info(JSON.stringify(username));
         // logger.info(JSON.stringify(password));
         // TODO: use OpenSearchService to initialize and manage client
         // TODO: get endpoint and credentials from saved objects
-        const client = new Client({
-          node: url,
-          auth: {
-            username,
-            password,
-          }
-        });
+        // const client = new Client({
+        //   node: url,
+        //   auth: {
+        //     username,
+        //     password,
+        //   },
+        // });
+        console.log('zhongnan data source client - 0');
+        await context.core.opensearch.dataSourceClient();
+        // console.log('zhongnan data source client - 1');
+        // console.log(await context.core.opensearch.dataSourceClient);
+        // console.log('zhongnan data source client - 2');
+        console.log(context.core.opensearch.dataSourceClient.asDataSourceUser);
+        // console.log(context.core.opensearch.client.asCurrentUser);
         const promise = shimAbortSignal(
-          // context.core.opensearch.client.asCurrentUser.search(params),
-          client.search(params),
+          (await context.core.opensearch.dataSourceClient).asDataSourceUser.search(params),
+          // client.search(params),
           options?.abortSignal
         );
         const { body: rawResponse } = (await promise) as ApiResponse<SearchResponse<any>>;

@@ -42,16 +42,19 @@ import {
 } from './opensearch';
 import { Auditor } from './audit_trail';
 import { InternalUiSettingsServiceStart, IUiSettingsClient } from './ui_settings';
+import { IClusterClient, IDataSourceClusterClient } from './opensearch/client';
 
 class CoreOpenSearchRouteHandlerContext {
   #client?: IScopedClusterClient;
   #legacy?: {
     client: Pick<LegacyScopedClusterClient, 'callAsInternalUser' | 'callAsCurrentUser'>;
   };
+  #dataSourceClient?: Promise<IDataSourceClusterClient>;
 
   constructor(
     private readonly opensearchStart: InternalOpenSearchServiceStart,
-    private readonly request: OpenSearchDashboardsRequest
+    private readonly request: OpenSearchDashboardsRequest,
+    private readonly savedObjectsRouterHandlerContext: CoreSavedObjectsRouteHandlerContext
   ) {}
 
   public get client() {
@@ -68,6 +71,43 @@ class CoreOpenSearchRouteHandlerContext {
       };
     }
     return this.#legacy;
+  }
+
+  public async getDataClient() {
+    if (this.#dataSourceClient == null) {
+      try {
+        this.#dataSourceClient = await this.opensearchStart.client.asDataSource(
+          this.request,
+          this.savedObjectsRouterHandlerContext.client
+        );
+        return this.#dataSourceClient;
+      } catch (error) {
+        console.log('zhongnan data source client error');
+        return 0;
+      }
+    }
+    return this.#dataSourceClient;
+  }
+
+  public get dataSourceClient() {
+    if (this.#dataSourceClient == null) {
+      // console.log('Zhongnan core context ext client');
+      // console.log(JSON.stringify(this.request.body.dataSource));
+
+      return async () => {
+        try {
+          this.#dataSourceClient = await this.opensearchStart.client.asDataSource(
+            this.request,
+            this.savedObjectsRouterHandlerContext.client
+          );
+          return this.#dataSourceClient;
+        } catch (error) {
+          console.log('zhongnan data source client error');
+          return 0;
+        }
+      };
+    }
+    return this.#dataSourceClient;
   }
 }
 
@@ -122,13 +162,14 @@ export class CoreRouteHandlerContext {
     private readonly coreStart: InternalCoreStart,
     private readonly request: OpenSearchDashboardsRequest
   ) {
-    this.opensearch = new CoreOpenSearchRouteHandlerContext(
-      this.coreStart.opensearch,
-      this.request
-    );
     this.savedObjects = new CoreSavedObjectsRouteHandlerContext(
       this.coreStart.savedObjects,
       this.request
+    );
+    this.opensearch = new CoreOpenSearchRouteHandlerContext(
+      this.coreStart.opensearch,
+      this.request,
+      this.savedObjects
     );
     this.uiSettings = new CoreUiSettingsRouteHandlerContext(
       this.coreStart.uiSettings,

@@ -102,6 +102,8 @@ export function parseClientOptions(config: OpenSearchClientConfig, scoped: boole
       password: config.password,
     };
   }
+  // Zhongnan tmp change
+  // clientOptions.auth = { username: 'admin', password: 'Admin_123' };
 
   clientOptions.nodes = config.hosts.map((host) => convertHost(host));
 

@@ -1801,6 +1801,7 @@ function getSavedObjectFromSource<T>(
     attributes: doc._source[type],
     references: doc._source.references || [],
     migrationVersion: doc._source.migrationVersion,
+    can_access: doc._source.can_access,
   };
 }
 

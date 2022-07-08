@@ -46,7 +46,7 @@ import { getRootProperties } from './get_root_properties';
  *  @return {OpenSearchPropertyMappings}
  */
 
-const omittedRootProps = ['migrationVersion', 'references'];
+const omittedRootProps = ['migrationVersion', 'references', 'can_access'];
 
 export function getRootPropertiesObjects(mappings: IndexMapping) {
   const rootProperties = getRootProperties(mappings);

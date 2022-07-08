@@ -91,6 +91,7 @@ export class SavedObjectsSerializer {
       ...(_source.migrationVersion && { migrationVersion: _source.migrationVersion }),
       ...(_source.updated_at && { updated_at: _source.updated_at }),
       ...(version && { version }),
+      can_access: _source.can_access || {},
     };
   }
 
@@ -112,6 +113,7 @@ export class SavedObjectsSerializer {
       updated_at,
       version,
       references,
+      can_access,
     } = savedObj;
     const source = {
       [type]: attributes,
@@ -122,6 +124,7 @@ export class SavedObjectsSerializer {
       ...(originId && { originId }),
       ...(migrationVersion && { migrationVersion }),
       ...(updated_at && { updated_at }),
+      can_access,
     };
 
     return {

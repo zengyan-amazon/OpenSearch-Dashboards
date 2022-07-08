@@ -243,6 +243,7 @@ export class SavedObjectsRepository {
       originId,
       initialNamespaces,
       version,
+      can_access,
     } = options;
     const namespace = normalizeNamespace(options.namespace);
 
@@ -289,6 +290,7 @@ export class SavedObjectsRepository {
       migrationVersion,
       updated_at: time,
       ...(Array.isArray(references) && { references }),
+      can_access,
     });
 
     const raw = this._serializer.savedObjectToRaw(migrated as SavedObjectSanitizedDoc);
@@ -325,7 +327,7 @@ export class SavedObjectsRepository {
     objects: Array<SavedObjectsBulkCreateObject<T>>,
     options: SavedObjectsCreateOptions = {}
   ): Promise<SavedObjectsBulkResponse<T>> {
-    const { overwrite = false, refresh = DEFAULT_REFRESH_SETTING } = options;
+    const { overwrite = false, refresh = DEFAULT_REFRESH_SETTING, can_access } = options;
     const namespace = normalizeNamespace(options.namespace);
     const time = this._getCurrentTime();
 
@@ -374,7 +376,7 @@ export class SavedObjectsRepository {
       .map(({ value: { object: { type, id } } }) => ({
         _id: this._serializer.generateRawId(namespace, type, id),
         _index: this.getIndexForType(type),
-        _source: ['type', 'namespaces'],
+        _source: ['type', 'namespaces', 'can_access'],
       }));
     const bulkGetResponse = bulkGetDocs.length
       ? await this.client.mget(
@@ -452,6 +454,7 @@ export class SavedObjectsRepository {
             updated_at: time,
             references: object.references || [],
             originId: object.originId,
+            can_access,
           }) as SavedObjectSanitizedDoc
         ),
       };
@@ -736,6 +739,7 @@ export class SavedObjectsRepository {
       typeToNamespacesMap,
       filter,
       preference,
+      identities
     } = options;
 
     if (!type && !typeToNamespacesMap) {
@@ -809,6 +813,7 @@ export class SavedObjectsRepository {
           typeToNamespacesMap,
           hasReference,
           kueryNode,
+          identities,
         }),
       },
     };
@@ -931,6 +936,10 @@ export class SavedObjectsRepository {
             error: errorContent(SavedObjectsErrorHelpers.createGenericNotFoundError(type, id)),
           } as any) as SavedObject<T>;
         }
+        // if (doc?.found) {
+        //   console.log('---');
+        //   console.log((doc as SavedObjectsRawDoc)._source.can_access);
+        // }
 
         // @ts-expect-error MultiGetHit._source is optional
         return getSavedObjectFromSource(this._registry, type, id, doc);
@@ -995,6 +1004,7 @@ export class SavedObjectsRepository {
       attributes: body._source[type],
       references: body._source.references || [],
       migrationVersion: body._source.migrationVersion,
+      can_access: body._source.can_access,
     };
   }
 
@@ -1321,7 +1331,7 @@ export class SavedObjectsRepository {
       .map(({ value: { type, id, objectNamespace } }) => ({
         _id: this._serializer.generateRawId(getNamespaceId(objectNamespace), type, id),
         _index: this.getIndexForType(type),
-        _source: ['type', 'namespaces'],
+        _source: ['type', 'namespaces', 'can_access'],
       }));
     const bulkGetResponse = bulkGetDocs.length
       ? await this.client.mget(
@@ -1374,6 +1384,24 @@ export class SavedObjectsRepository {
                 error: errorContent(SavedObjectsErrorHelpers.createGenericNotFoundError(type, id)),
               },
             };
+          }
+          if (docFound && actualResult.fields?.can_access) {
+            let hasPermission = false;
+            options.can_access?.rw_identities?.forEach((value) => {
+              if (actualResult.fields?.can_access?.includes(value)) {
+                hasPermission = true;
+              }
+            });
+            if (!hasPermission) {
+              return {
+                tag: 'Left' as 'Left',
+                error: {
+                  id,
+                  type,
+                  error: errorContent(SavedObjectsErrorHelpers.decorateForbiddenError(new Error(`Update ${type}/${id} is forbidden.`))),
+                },
+              };
+            }
           }
           // @ts-expect-error MultiGetHit is incorrectly missing _id, _source
           namespaces = actualResult!._source.namespaces ?? [

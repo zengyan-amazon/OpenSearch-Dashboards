@@ -175,6 +175,17 @@ function defaultMapping(): IndexMapping {
           },
         },
       },
+      can_access: {
+        type: 'object',
+        properties: {
+          rw_identities: {
+            type: 'keyword',
+          },
+          ro_identities: {
+            type: 'keyword',
+          },
+        },
+      },
     },
   };
 }

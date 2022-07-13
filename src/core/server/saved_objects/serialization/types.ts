@@ -28,7 +28,7 @@
  * under the License.
  */
 
-import { SavedObjectsMigrationVersion, SavedObjectReference } from '../types';
+import { SavedObjectsMigrationVersion, SavedObjectReference, SavedObjectAccessPermission } from '../types';
 
 /**
  * A raw document as represented directly in the saved object index.
@@ -52,6 +52,7 @@ export interface SavedObjectsRawDocSource {
   updated_at?: string;
   references?: SavedObjectReference[];
   originId?: string;
+  can_access?: SavedObjectAccessPermission;
 
   [typeMapping: string]: any;
 }
@@ -75,6 +76,10 @@ interface Referencable {
   references: SavedObjectReference[];
 }
 
+interface AccessControlEnabled {
+  can_access: SavedObjectAccessPermission;
+}
+
 /**
  * Describes Saved Object documents from OpenSearch Dashboards < 7.0.0 which don't have a
  * `references` root property defined. This type should only be used in
@@ -82,7 +87,7 @@ interface Referencable {
  *
  * @public
  */
-export type SavedObjectUnsanitizedDoc<T = unknown> = SavedObjectDoc<T> & Partial<Referencable>;
+export type SavedObjectUnsanitizedDoc<T = unknown> = SavedObjectDoc<T> & Partial<Referencable> & Partial<AccessControlEnabled>;
 
 /**
  * Describes Saved Object documents that have passed through the migration
@@ -90,4 +95,4 @@ export type SavedObjectUnsanitizedDoc<T = unknown> = SavedObjectDoc<T> & Partial
  *
  * @public
  */
-export type SavedObjectSanitizedDoc<T = unknown> = SavedObjectDoc<T> & Referencable;
+export type SavedObjectSanitizedDoc<T = unknown> = SavedObjectDoc<T> & Referencable & AccessControlEnabled;

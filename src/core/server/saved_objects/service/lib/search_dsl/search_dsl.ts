@@ -52,6 +52,7 @@ interface GetSearchDslOptions {
     id: string;
   };
   kueryNode?: KueryNode;
+  identities?: string[];
 }
 
 export function getSearchDsl(
@@ -71,6 +72,7 @@ export function getSearchDsl(
     typeToNamespacesMap,
     hasReference,
     kueryNode,
+    identities,
   } = options;
 
   if (!type) {
@@ -93,6 +95,7 @@ export function getSearchDsl(
       defaultSearchOperator,
       hasReference,
       kueryNode,
+      identities: identities || [],
     }),
     ...getSortingParams(mappings, type, sortField, sortOrder),
   };

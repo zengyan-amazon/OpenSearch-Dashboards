@@ -44,7 +44,7 @@ export {
   SavedObjectsImportRetry,
 } from './import/types';
 
-import { SavedObject } from '../../types';
+import { SavedObject, SavedObjectAccessPermission } from '../../types';
 
 type KueryNode = any;
 
@@ -55,6 +55,7 @@ export {
   SavedObject,
   SavedObjectError,
   SavedObjectReference,
+  SavedObjectAccessPermission,
   SavedObjectsMigrationVersion,
 } from '../../types';
 
@@ -110,6 +111,7 @@ export interface SavedObjectsFindOptions {
   typeToNamespacesMap?: Map<string, string[] | undefined>;
   /** An optional OpenSearch preference value to be used for the query **/
   preference?: string;
+  identities?: string[];
 }
 
 /**
@@ -119,6 +121,7 @@ export interface SavedObjectsFindOptions {
 export interface SavedObjectsBaseOptions {
   /** Specify the namespace for this operation */
   namespace?: string;
+  can_access?: SavedObjectAccessPermission;
 }
 
 /**

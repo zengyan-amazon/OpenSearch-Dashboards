@@ -69,6 +69,11 @@ export interface SavedObjectReference {
   id: string;
 }
 
+export interface SavedObjectAccessPermission {
+  rw_identities?: string[];
+  ro_identities?: string[];
+}
+
 /**
  * Information about the migrations that have been applied to this SavedObject.
  * When OpenSearch Dashboards starts up, OpenSearchDashboardsMigrator detects outdated documents and
@@ -113,6 +118,8 @@ export interface SavedObject<T = unknown> {
    * space.
    */
   originId?: string;
+
+  can_access?: SavedObjectAccessPermission;
 }
 
 export interface SavedObjectError {

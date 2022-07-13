@@ -144,6 +144,26 @@ interface QueryParams {
   defaultSearchOperator?: string;
   hasReference?: HasReferenceQueryParams;
   kueryNode?: KueryNode;
+  identities: string[];
+}
+
+export function getReadClauseForIdentities(identities: string[]) {
+  return {
+    bool: {
+      should: [
+        {
+          terms: {
+            "can_access.ro_identities": identities,
+          },
+        },
+        {
+          terms: {
+            "can_access.rw_identities": identities,
+          }
+        }
+      ]
+    }
+  }
 }
 
 export function getClauseForReference(reference: HasReferenceQueryParams) {
@@ -200,6 +220,7 @@ export function getQueryParams({
   defaultSearchOperator,
   hasReference,
   kueryNode,
+  identities,
 }: QueryParams) {
   const types = getTypes(
     registry,
@@ -243,6 +264,12 @@ export function getQueryParams({
     } else {
       bool.must = [simpleQueryStringClause];
     }
+  }
+  if (identities.length > 0) {
+    if (!bool.must) {
+      bool.must = [];
+    }
+    bool.must.push(getReadClauseForIdentities(identities));
   }
 
   return { query: { bool } };

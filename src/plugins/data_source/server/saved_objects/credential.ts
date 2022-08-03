@@ -28,7 +28,7 @@ export const credential: SavedObjectsType = {
   mappings: {
     dynamic: false,
     properties: {
-      title: { type: 'text', index: false },
+      title: { type: 'text' },
       credentialType: { type: 'keyword', index: false },
       credentialMaterials: { type: 'object' },
       description: { type: 'text', index: false },

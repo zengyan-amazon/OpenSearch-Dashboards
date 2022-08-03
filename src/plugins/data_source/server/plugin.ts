@@ -5,7 +5,6 @@
 
 import { PluginInitializerContext, CoreSetup, CoreStart, Plugin, Logger } from 'src/core/server';
 import { dataSource, credential } from './saved_objects';
-
 import { DataSourcePluginSetup, DataSourcePluginStart } from './types';
 
 export class DataSourcePlugin implements Plugin<DataSourcePluginSetup, DataSourcePluginStart> {
@@ -20,7 +19,6 @@ export class DataSourcePlugin implements Plugin<DataSourcePluginSetup, DataSourc
 
     // Register credential saved object type
     core.savedObjects.registerType(credential);
-
     // Register data source saved object type
     core.savedObjects.registerType(dataSource);
 

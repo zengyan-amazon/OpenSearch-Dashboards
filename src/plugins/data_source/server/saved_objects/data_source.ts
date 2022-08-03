@@ -4,9 +4,10 @@
  */
 
 import { SavedObjectsType } from 'opensearch-dashboards/server';
+import { DATA_SOURCE_SAVED_OBJECT_TYPE } from '../../common';
 
 export const dataSource: SavedObjectsType = {
-  name: 'data-source',
+  name: DATA_SOURCE_SAVED_OBJECT_TYPE,
   namespaceType: 'agnostic',
   hidden: false,
   management: {

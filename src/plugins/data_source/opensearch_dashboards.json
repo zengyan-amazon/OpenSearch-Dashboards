@@ -2,6 +2,7 @@
   "id": "dataSource",
   "version": "opensearchDashboards",
   "opensearchDashboardsVersion": "opensearchDashboards",
+  "configPath": ["dataSource"],
   "server": true,
   "ui": false,
   "requiredPlugins": [],

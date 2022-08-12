@@ -9,6 +9,7 @@ import { DataSourcePlugin } from './plugin';
 
 export const configSchema = schema.object({
   enabled: schema.boolean({ defaultValue: false }),
+  client_pool_size: schema.number({ defaultValue: 20 }),
 });
 
 export type DataSourcePluginConfigType = TypeOf<typeof configSchema>;

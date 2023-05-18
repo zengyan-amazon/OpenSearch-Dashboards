@@ -7,7 +7,7 @@ import { SavedObjectsType } from 'opensearch-dashboards/server';
 
 export const dataSource: SavedObjectsType = {
   name: 'data-source',
-  namespaceType: 'agnostic',
+  namespaceType: 'single',
   hidden: false,
   management: {
     icon: 'apps', // todo: pending ux #2034

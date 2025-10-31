@@ -64,6 +64,9 @@
     "notice:generate": "scripts/use_node scripts/notice",
     "build-platform": "scripts/use_node scripts/build",
     "build": "scripts/use_node scripts/build --all-platforms",
+    "build:v5": "node scripts/build_v5",
+    "clean:v5": "rimraf build_v5 && mkdir -p build_v5",
+    "start:v5": "node scripts/serve_v5",
     "start": "scripts/use_node scripts/opensearch_dashboards --dev",
     "start:docker": "scripts/use_node scripts/opensearch_dashboards --dev --opensearch.hosts=$OPENSEARCH_HOSTS --opensearch.ignoreVersionMismatch=true --server.host=$SERVER_HOST",
     "start:security": "scripts/use_node scripts/opensearch_dashboards --dev --security",
@@ -566,11 +569,17 @@
     "vega-lite": "^5.23.0",
     "vega-schema-url-parser": "^2.1.0",
     "vega-tooltip": "^0.30.0",
+    "babel-loader": "^8.2.3",
     "vinyl-fs": "^3.0.3",
+    "webpack5": "npm:webpack@^5.94.0",
+    "webpack5-dev-server": "npm:webpack-dev-server@^4.15.0",
     "wait-on": "^8.0.2",
     "xml2js": "^0.5.0",
     "xmlbuilder": "13.0.2",
-    "zlib": "^1.0.5"
+    "zlib": "^1.0.5",
+    "path-browserify": "^1.0.1",
+    "css-loader": "^5.2.7",
+    "style-loader": "^1.1.3"
   },
   "engines": {
     "node": ">=14.20.1 <21",

@@ -1,0 +1,12 @@
+/*
+ * Example stylesheet bundled by the Webpack 5 pilot build.
+ */
+
+.pilot-banner {
+  font-family: sans-serif;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #1ea5fc, #8759f2);
+  color: #fff;
+}

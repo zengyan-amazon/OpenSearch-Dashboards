@@ -1,0 +1,42 @@
+[
+  {
+    "id": "pilot",
+    "entry": "webpack5_pilot/demo_entry.tsx"
+  },
+  {
+    "id": "core",
+    "entry": "webpack5_pilot/core_host_entry.ts"
+  },
+  {
+    "id": "home",
+    "entry": "src/plugins/home/public/index.ts"
+  },
+  {
+    "id": "navigation",
+    "entry": "webpack5_pilot/plugins/navigation.entry.ts"
+  },
+  {
+    "id": "console",
+    "entry": "webpack5_pilot/plugins/console.entry.ts"
+  },
+  {
+    "id": "dev_tools",
+    "entry": "webpack5_pilot/plugins/dev_tools.entry.ts"
+  },
+  {
+    "id": "ui_actions",
+    "entry": "webpack5_pilot/plugins/ui_actions.stub.ts"
+  },
+  {
+    "id": "url_forwarding",
+    "entry": "webpack5_pilot/plugins/url_forwarding.stub.ts"
+  },
+  {
+    "id": "opensearch_dashboards_legacy",
+    "entry": "webpack5_pilot/plugins/opensearch_dashboards_legacy.stub.ts"
+  },
+  {
+    "id": "management_overview",
+    "entry": "webpack5_pilot/plugins/management_overview.stub.ts"
+  }
+]

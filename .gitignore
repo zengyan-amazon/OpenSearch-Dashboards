@@ -17,6 +17,7 @@ trash
 /built_assets
 target
 /build
+/build_v5
 /bwc_tmp
 .jruby
 .idea

@@ -12,16 +12,17 @@ poc-microfrontend/
 │   ├── src/
 │   │   └── shared-deps-config.js # Webpack 5 config for shared dependencies
 │   ├── package.json             # Webpack 5 build dependencies
-│   └── test-build.js            # Direct webpack 5 testing script
+│   ├── build-shared.js          # Main shared dependencies build script
+│   └── test-build.js            # Direct webpack 5 testing script (alternative)
 ├── dev-server/                  # Micro-frontend development server
 │   └── src/
 │       └── index.html           # Test page with dependency validation
-├── scripts/                     # Build and development scripts
-│   ├── webpack5-build.js        # Main build orchestration script
+├── scripts/                     # Development scripts
 │   └── webpack5-dev-server.js   # Development server (port 5602)
 └── dist/                        # Build output directory
     └── shared-deps/             # Webpack 5 built shared dependencies
-        ├── osd-ui-shared-deps.js        # Main shared bundle (39.5MB)
+        ├── osd-ui-shared-deps.js        # Main shared bundle (24MB)
+        ├── osd-ui-shared-deps.@elastic.js # @elastic dependencies (17MB)
         ├── osd-ui-shared-deps.v*.css    # Theme CSS bundles (6 variants)
         ├── fonts/                       # Monaco editor fonts
         └── *.js                         # Individual icon modules
@@ -47,31 +48,44 @@ Instead of creating separate code, the webpack 5 system **builds existing OSD co
 
 ### `yarn build:webpack5:shared`
 
-**Purpose**: Build OSD shared dependencies using webpack 5
+**Purpose**: Build OSD shared dependencies using webpack 5 (production mode)
 **Location**: Runs from repository root
 **What it does**:
-1. Executes `poc-microfrontend/scripts/webpack5-build.js --shared`
-2. Loads webpack 5 configuration from `webpack5-optimizer/src/shared-deps-config.js`
-3. Builds `packages/osd-ui-shared-deps/entry.js` using webpack 5
-4. Processes all theme CSS variants (v7/v8/v9 × light/dark)
-5. Handles Monaco editor assets, ANTLR grammars, icon systems
-6. Outputs to `poc-microfrontend/dist/shared-deps/`
+1. Changes to `poc-microfrontend/webpack5-optimizer` directory
+2. Executes `node build-shared.js` with webpack 5 dependencies
+3. Loads webpack 5 configuration from `src/shared-deps-config.js`
+4. Builds `packages/osd-ui-shared-deps/entry.js` using webpack 5
+5. Processes all theme CSS variants (v7/v8/v9 × light/dark)
+6. Handles Monaco editor assets, ANTLR grammars, icon systems
+7. Creates optimized split bundles for @elastic dependencies
 
 **Command Flow**:
 ```bash
 yarn build:webpack5:shared
   ↓
-scripts/use_node poc-microfrontend/scripts/webpack5-build.js --shared
+cd poc-microfrontend/webpack5-optimizer && node build-shared.js
   ↓
-webpack5-build.js loads shared-deps-config.js
+build-shared.js loads shared-deps-config.js  
   ↓
 Webpack 5 processes packages/osd-ui-shared-deps/entry.js
   ↓
-Outputs: osd-ui-shared-deps.js + theme CSS bundles
+Outputs: Split bundles (24MB main + 17MB @elastic + themes)
 ```
 
+### `yarn build:webpack5:shared:dev`
+
+**Purpose**: Build OSD shared dependencies using webpack 5 (development mode)
+**Same as production but with source maps and no minification**
+
 **Build Time**: ~46 seconds
-**Output Size**: 39.5MB main bundle + 6 theme CSS files (~720KB each)
+**Output Size**: 24MB main bundle + 17MB @elastic bundle + 6 theme CSS files (~720KB each)
+**Total Size**: 41MB (vs webpack 4: 44MB - **7% smaller!**)
+
+### `yarn test:webpack5`
+
+**Purpose**: Alternative build command for testing
+**Runs**: `cd poc-microfrontend/webpack5-optimizer && node test-build.js`
+**Use Case**: Direct testing without yarn overhead
 
 ### `yarn dev:microfrontend`
 

@@ -83,3 +83,5 @@ snapshots.js
 .lighthouserc.js
 .lhci_output.json
 /.lighthouseci/
+
+poc-microfrontend/dist/

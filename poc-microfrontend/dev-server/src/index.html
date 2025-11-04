@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenSearch Dashboards - Webpack 5 Micro-Frontend PoC</title>
+    
+    <!-- Load theme CSS (default to v8 light) -->
+    <link rel="stylesheet" href="/shared-deps/osd-ui-shared-deps.v8.light.css">
+    <link rel="stylesheet" href="/shared-deps/osd-ui-shared-deps.css">
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(90deg, #005eb8 0%, #0079cc 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .status {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 OpenSearch Dashboards - Webpack 5 Micro-Frontend PoC</h1>
+        <p>Testing webpack 5 shared dependencies and Module Federation</p>
+    </div>
+    
+    <div class="status">
+        <h2>Build Status</h2>
+        <div id="status">Loading...</div>
+    </div>
+    
+    <div class="status">
+        <h2>Shared Dependencies Test</h2>
+        <div id="deps-test">Testing...</div>
+    </div>
+    
+    <div class="status">
+        <h2>Available Dependencies</h2>
+        <pre id="deps-list">Loading...</pre>
+    </div>
+
+    <!-- Load our webpack 5 shared dependencies bundle -->
+    <script src="/shared-deps/osd-ui-shared-deps.js"></script>
+    
+    <script>
+        console.log('🧪 Testing Webpack 5 shared dependencies...');
+        
+        // Test if our shared dependencies loaded correctly
+        function testSharedDeps() {
+            const statusEl = document.getElementById('status');
+            const depsTestEl = document.getElementById('deps-test');
+            const depsListEl = document.getElementById('deps-list');
+            
+            try {
+                // Check if __osdSharedDeps__ global is available
+                if (typeof __osdSharedDeps__ === 'undefined') {
+                    throw new Error('__osdSharedDeps__ global not found');
+                }
+                
+                statusEl.innerHTML = '<span class="success">✅ Webpack 5 bundle loaded successfully!</span>';
+                console.log('✅ __osdSharedDeps__ global found:', __osdSharedDeps__);
+                
+                // Test individual dependencies
+                const tests = [
+                    { name: 'React', prop: 'React' },
+                    { name: 'ReactDOM', prop: 'ReactDom' },
+                    { name: '@elastic/eui', prop: 'ElasticEui' },
+                    { name: 'Lodash', prop: 'Lodash' },
+                    { name: 'Moment', prop: 'Moment' },
+                    { name: 'RxJS', prop: 'Rxjs' },
+                    { name: '@osd/i18n', prop: 'OsdI18n' },
+                    { name: '@osd/monaco', prop: 'OsdMonaco' }
+                ];
+                
+                const results = tests.map(test => {
+                    const available = __osdSharedDeps__[test.prop] !== undefined;
+                    const version = available && __osdSharedDeps__[test.prop]?.version || 'unknown';
+                    return {
+                        name: test.name,
+                        available,
+                        version,
+                        status: available ? '✅' : '❌'
+                    };
+                });
+                
+                const successCount = results.filter(r => r.available).length;
+                const totalCount = results.length;
+                
+                depsTestEl.innerHTML = `<span class="${successCount === totalCount ? 'success' : 'error'}">
+                    ${successCount}/${totalCount} shared dependencies loaded successfully
+                </span>`;
+                
+                // Display results
+                depsListEl.textContent = results.map(r => 
+                    `${r.status} ${r.name}: ${r.available ? 'Available' : 'Missing'}`
+                ).join('\n');
+                
+                console.log('🧪 Shared dependencies test results:', results);
+                
+            } catch (error) {
+                statusEl.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+                depsTestEl.innerHTML = '<span class="error">❌ Shared dependencies test failed</span>';
+                console.error('❌ Shared dependencies test failed:', error);
+            }
+        }
+        
+        // Run tests when DOM is ready
+        document.addEventListener('DOMContentLoaded', testSharedDeps);
+        
+        // Also run immediately in case DOM is already ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', testSharedDeps);
+        } else {
+            testSharedDeps();
+        }
+    </script>
+</body>
+</html>

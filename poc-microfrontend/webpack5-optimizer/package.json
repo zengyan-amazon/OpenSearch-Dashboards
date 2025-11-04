@@ -1,0 +1,32 @@
+{
+  "name": "osd-webpack5-optimizer",
+  "version": "1.0.0",
+  "description": "Webpack 5 + Module Federation build system for OpenSearch-Dashboards",
+  "private": true,
+  "main": "./src/index.js",
+  "scripts": {
+    "build": "node src/build.js",
+    "build:shared": "node src/build-shared.js",
+    "build:core": "node src/build-core.js",
+    "build:plugins": "node src/build-plugins.js"
+  },
+  "dependencies": {
+    "webpack": "^5.90.0",
+    "webpack-cli": "^5.1.0",
+    "mini-css-extract-plugin": "^2.7.0",
+    "compression-webpack-plugin": "^10.0.0",
+    "babel-loader": "^9.1.0",
+    "css-loader": "^6.8.0",
+    "sass-loader": "^13.3.0",
+    "style-loader": "^3.3.0",
+    "file-loader": "^6.2.0",
+    "@osd/babel-preset": "file:../../packages/osd-babel-preset",
+    "@osd/utils": "file:../../packages/osd-utils",
+    "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+    "sass-embedded": "1.66.1"
+  },
+  "devDependencies": {
+    "@types/webpack": "^5.28.0",
+    "typescript": "4.6.4"
+  }
+}

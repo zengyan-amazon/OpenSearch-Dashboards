@@ -61,16 +61,16 @@ exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
       'process.env.NODE_ENV': dev ? '"development"' : '"production"',
     }),
     
-    // Compression plugins for production
+    // Compression plugins for production - fix filename template for webpack 5
     ...(dev ? [] : [
       new CompressionPlugin({
         algorithm: 'brotliCompress',
-        filename: '[path].br',
+        filename: '[file].br',
         test: /\.(js|css)$/,
       }),
       new CompressionPlugin({
         algorithm: 'gzip', 
-        filename: '[path].gz',
+        filename: '[file].gz',
         test: /\.(js|css)$/,
       }),
     ]),

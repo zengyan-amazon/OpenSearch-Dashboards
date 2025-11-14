@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenSearch Dashboards - Webpack 5 Micro-Frontend PoC</title>
+    <title>OpenSearch Dashboards - Webpack 5 + Module Federation PoC</title>
     
     <!-- Load theme CSS (default to v8 light) -->
     <link rel="stylesheet" href="/shared-deps/osd-ui-shared-deps.v8.light.css">
@@ -43,8 +43,8 @@
 </head>
 <body>
     <div class="header">
-        <h1>🚀 OpenSearch Dashboards - Webpack 5 Micro-Frontend PoC</h1>
-        <p>Testing webpack 5 shared dependencies and Module Federation</p>
+        <h1>🚀 OpenSearch Dashboards - Webpack 5 + Module Federation PoC</h1>
+        <p>Testing dual loading approaches: Traditional + Module Federation</p>
     </div>
     
     <div class="status">
@@ -53,38 +53,39 @@
     </div>
     
     <div class="status">
-        <h2>Shared Dependencies Test</h2>
-        <div id="deps-test">Testing...</div>
+        <h2>Traditional Loading (window.__osdSharedDeps__)</h2>
+        <div id="global-deps-test">Testing...</div>
+        <pre id="global-deps-list">Loading...</pre>
     </div>
     
     <div class="status">
-        <h2>Available Dependencies</h2>
-        <pre id="deps-list">Loading...</pre>
+        <h2>Module Federation Loading (window.federated)</h2>
+        <div id="federated-deps-test">Testing...</div>
+        <pre id="federated-deps-list">Loading...</pre>
     </div>
 
-    <!-- Load our webpack 5 shared dependencies bundles (split like original) -->
+    <!-- Load traditional webpack 5 shared dependencies bundles -->
     <script src="/shared-deps/osd-ui-shared-deps.@elastic.js"></script>
     <script src="/shared-deps/osd-ui-shared-deps.js"></script>
     
+    <!-- Load Module Federation entry point -->
+    <script src="/shared-deps/remoteEntry.js"></script>
+    
     <script>
-        console.log('🧪 Testing Webpack 5 shared dependencies...');
+        console.log('🧪 Testing Dual Namespace: Traditional + Module Federation...');
         
-        // Test if our shared dependencies loaded correctly
-        function testSharedDeps() {
-            const statusEl = document.getElementById('status');
-            const depsTestEl = document.getElementById('deps-test');
-            const depsListEl = document.getElementById('deps-list');
+        // Test traditional global loading
+        function testGlobalDeps() {
+            const globalTestEl = document.getElementById('global-deps-test');
+            const globalListEl = document.getElementById('global-deps-list');
             
             try {
-                // Check if __osdSharedDeps__ global is available
                 if (typeof __osdSharedDeps__ === 'undefined') {
                     throw new Error('__osdSharedDeps__ global not found');
                 }
                 
-                statusEl.innerHTML = '<span class="success">✅ Webpack 5 bundle loaded successfully!</span>';
-                console.log('✅ __osdSharedDeps__ global found:', __osdSharedDeps__);
+                console.log('✅ Traditional: __osdSharedDeps__ found');
                 
-                // Test individual dependencies
                 const tests = [
                     { name: 'React', prop: 'React' },
                     { name: 'ReactDOM', prop: 'ReactDom' },
@@ -96,46 +97,163 @@
                     { name: '@osd/monaco', prop: 'OsdMonaco' }
                 ];
                 
-                const results = tests.map(test => {
-                    const available = __osdSharedDeps__[test.prop] !== undefined;
-                    const version = available && __osdSharedDeps__[test.prop]?.version || 'unknown';
+                const results = tests.map(test => ({
+                    name: test.name,
+                    available: __osdSharedDeps__[test.prop] !== undefined,
+                    status: __osdSharedDeps__[test.prop] !== undefined ? '✅' : '❌'
+                }));
+                
+                const successCount = results.filter(r => r.available).length;
+                
+                globalTestEl.innerHTML = `<span class="${successCount === tests.length ? 'success' : 'error'}">
+                    ${successCount}/${tests.length} dependencies loaded via traditional global scripts
+                </span>`;
+                
+                globalListEl.textContent = results.map(r => 
+                    `${r.status} ${r.name}: Available in __osdSharedDeps__`
+                ).join('\n');
+                
+                console.log('🔗 Traditional loading results:', results);
+                
+            } catch (error) {
+                globalTestEl.innerHTML = `<span class="error">❌ Traditional loading failed: ${error.message}</span>`;
+                console.error('❌ Traditional loading failed:', error);
+            }
+        }
+        
+        // Test Module Federation loading with dual namespace
+        async function testFederatedDeps() {
+            const federatedTestEl = document.getElementById('federated-deps-test');
+            const federatedListEl = document.getElementById('federated-deps-list');
+            
+            federatedTestEl.innerHTML = '<span class="info">🔄 Loading via Module Federation...</span>';
+            
+            try {
+                const container = window.shared_deps;
+                if (!container) {
+                    throw new Error('Module Federation container not found');
+                }
+                
+                console.log('🔌 Module Federation container found');
+                
+                // Load SharedBundle via Module Federation
+                const sharedBundleModule = await container.get('./SharedBundle');
+                const sharedBundle = sharedBundleModule();
+                
+                // Create federated namespace (separate from traditional)
+                window.federated = {
+                    React: sharedBundle.React,
+                    ReactDOM: sharedBundle.ReactDom,
+                    ElasticEui: sharedBundle.ElasticEui,
+                    Lodash: sharedBundle.Lodash,
+                    Moment: sharedBundle.Moment,
+                    RxJS: sharedBundle.Rxjs,
+                    OsdI18n: sharedBundle.OsdI18n,
+                    OsdMonaco: sharedBundle.OsdMonaco
+                };
+                
+                console.log('✅ Federated: window.federated namespace created');
+                
+                const federatedTests = [
+                    { name: 'React', prop: 'React' },
+                    { name: 'ReactDOM', prop: 'ReactDOM' },
+                    { name: '@elastic/eui', prop: 'ElasticEui' },
+                    { name: 'Lodash', prop: 'Lodash' },
+                    { name: 'Moment', prop: 'Moment' },
+                    { name: 'RxJS', prop: 'RxJS' },
+                    { name: '@osd/i18n', prop: 'OsdI18n' },
+                    { name: '@osd/monaco', prop: 'OsdMonaco' }
+                ];
+                
+                const federatedResults = federatedTests.map(test => {
+                    const dep = window.federated[test.prop];
+                    const available = dep !== undefined;
+                    const type = typeof dep;
+                    const isFunction = typeof dep === 'function';
+                    const isObject = typeof dep === 'object' && dep !== null;
+                    const hasVersion = dep?.version || (dep?.default?.version);
+                    const hasReactAPI = test.name === 'React' && dep?.createElement;
+                    const hasLodashAPI = test.name === 'Lodash' && dep?.map && dep?.filter;
+                    
                     return {
                         name: test.name,
                         available,
-                        version,
+                        type,
+                        isFunction,
+                        isObject,
+                        version: hasVersion,
+                        reactAPI: hasReactAPI,
+                        lodashAPI: hasLodashAPI,
                         status: available ? '✅' : '❌'
                     };
                 });
                 
-                const successCount = results.filter(r => r.available).length;
-                const totalCount = results.length;
+                const federatedSuccessCount = federatedResults.filter(r => r.available).length;
                 
-                depsTestEl.innerHTML = `<span class="${successCount === totalCount ? 'success' : 'error'}">
-                    ${successCount}/${totalCount} shared dependencies loaded successfully
+                federatedTestEl.innerHTML = `<span class="${federatedSuccessCount === federatedTests.length ? 'success' : 'error'}">
+                    ${federatedSuccessCount}/${federatedTests.length} dependencies loaded via Module Federation
                 </span>`;
                 
-                // Display results
-                depsListEl.textContent = results.map(r => 
-                    `${r.status} ${r.name}: ${r.available ? 'Available' : 'Missing'}`
-                ).join('\n');
+                federatedListEl.textContent = federatedResults.map(r => {
+                    const details = [];
+                    if (r.available) {
+                        details.push(`type: ${r.type}`);
+                        if (r.isFunction) details.push('function');
+                        if (r.isObject) details.push('object');
+                        if (r.version) details.push(`v${r.version}`);
+                        if (r.reactAPI) details.push('React.createElement ✓');
+                        if (r.lodashAPI) details.push('lodash.map ✓');
+                    }
+                    const detailStr = details.length > 0 ? ` (${details.join(', ')})` : '';
+                    return `${r.status} ${r.name}: ${r.available ? `Available in window.federated${detailStr}` : 'Missing'}`;
+                }).join('\n');
                 
-                console.log('🧪 Shared dependencies test results:', results);
+                console.log('🔌 Module Federation results:', federatedResults);
+                console.log('🌐 Both namespaces working:');
+                console.log('   Traditional: window.__osdSharedDeps__', !!window.__osdSharedDeps__);
+                console.log('   Federated:   window.federated', !!window.federated);
                 
             } catch (error) {
-                statusEl.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
-                depsTestEl.innerHTML = '<span class="error">❌ Shared dependencies test failed</span>';
-                console.error('❌ Shared dependencies test failed:', error);
+                federatedTestEl.innerHTML = `<span class="error">❌ Module Federation failed: ${error.message}</span>`;
+                console.error('❌ Module Federation failed:', error);
             }
         }
         
-        // Run tests when DOM is ready
-        document.addEventListener('DOMContentLoaded', testSharedDeps);
+        // Overall status
+        function updateOverallStatus() {
+            const statusEl = document.getElementById('status');
+            
+            try {
+                const traditional = typeof __osdSharedDeps__ !== 'undefined';
+                const federated = !!window.federated;
+                const container = !!window.shared_deps;
+                
+                if (traditional && federated) {
+                    statusEl.innerHTML = '<span class="success">✅ DUAL SUCCESS: Traditional + Module Federation both working!</span>';
+                } else if (traditional && container) {
+                    statusEl.innerHTML = '<span class="info">ℹ️ Traditional working, Module Federation container ready</span>';
+                } else if (traditional) {
+                    statusEl.innerHTML = '<span class="info">ℹ️ Traditional loading working</span>';
+                } else {
+                    statusEl.innerHTML = '<span class="error">❌ Issues detected</span>';
+                }
+            } catch (error) {
+                statusEl.innerHTML = `<span class="error">❌ Status error: ${error.message}</span>`;
+            }
+        }
         
-        // Also run immediately in case DOM is already ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', testSharedDeps);
-        } else {
-            testSharedDeps();
+        // Run tests
+        document.addEventListener('DOMContentLoaded', async () => {
+            updateOverallStatus();
+            testGlobalDeps();
+            await testFederatedDeps();
+            updateOverallStatus();
+        });
+        
+        if (document.readyState !== 'loading') {
+            updateOverallStatus();
+            testGlobalDeps();
+            testFederatedDeps().then(() => updateOverallStatus());
         }
     </script>
 </body>

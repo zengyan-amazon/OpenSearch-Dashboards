@@ -78,6 +78,13 @@ const server = http.createServer((req, res) => {
     return;
   }
   
+  // Serve Module Federation chunks (requested from root by remoteEntry.js)
+  const chunkFile = path.resolve(DIST_DIR, 'shared-deps', pathname.slice(1));
+  if (fs.existsSync(chunkFile)) {
+    serveFile(chunkFile, res);
+    return;
+  }
+  
   // 404 for everything else
   res.writeHead(404, { 'Content-Type': 'text/plain' });
   res.end('404 - Not Found');

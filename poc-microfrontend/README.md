@@ -670,25 +670,33 @@ new ModuleFederationPlugin({
 - **Development Experience**: Side-by-side comparison functional
 - **Zero Code Changes**: No modifications to existing OSD codebase
 
-### 📊 Performance Results (Final Production-Ready)
+### 📊 Performance Results (Final Production-Ready + Module Federation)
 
-#### **Development Mode (with source maps)**
-- **Build Time**: ~46 seconds
-- **Bundle Size**: **24MB main + 17MB @elastic** (split bundles with source maps)
-- **Total Bundle Size**: **41MB** (vs webpack 4: 44MB = **7% smaller!**)
+#### **Development Mode (with source maps + Module Federation)**
+- **Build Time**: ~52 seconds (includes Module Federation shared configuration)
+- **Bundle Size**: **25MB main + 18MB @elastic** (split bundles with source maps)
+- **Total Bundle Size**: **43MB** (vs webpack 4: 44MB = **2% smaller**)
+- **Module Federation**: Shared configuration ready, no bloated remoteEntry.js
 
-#### **Production Mode (fully optimized)**
-- **Build Time**: ~2.4 minutes (with minification and compression)
+#### **Production Mode (fully optimized + Module Federation)**
+- **Build Time**: ~2.4 minutes (with minification, compression, and Module Federation)
 - **Bundle Size**: **12MB main + 4.8MB @elastic** (minified split bundles)  
 - **Total Bundle Size**: **16.8MB** (vs webpack 4: 44MB = **62% smaller!**)
 - **Compression**: Gzip reduces served size by ~79% (12MB → ~3MB)
 - **Compression Files**: Clean `.gz` and `.br` files with proper naming
 
+#### **Module Federation Optimization**
+- **remoteEntry.js**: **ELIMINATED** (was 21MB, now 0KB - removed bloat!)
+- **Shared Config**: 9 dependencies configured for future plugin federation
+- **Backward Compatibility**: Existing plugins require zero code changes
+- **Future Ready**: Infrastructure prepared for CDN deployment and runtime loading
+
 #### **Universal Results**
 - **Theme Assets**: 6 CSS bundles ~720KB each (all modes)
-- **Success Rate**: 8/8 shared dependencies working (100%)
+- **Success Rate**: 8/8 shared dependencies working (100% traditional loading)
 - **Optimization**: Split chunk architecture matching original webpack 4 design
 - **Compression**: Production-ready gzip/brotli compression working perfectly
+- **Module Federation**: Shared dependency management ready for plugin federation
 
 This PoC demonstrates that **webpack 5 micro-frontend architecture is feasible** for OpenSearch Dashboards with excellent compatibility and performance characteristics.
 

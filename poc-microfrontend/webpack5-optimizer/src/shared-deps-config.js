@@ -6,9 +6,8 @@
  */
 
 const Path = require('path');
-// For initial testing, disable Module Federation and just use webpack 5
-// TODO: Add Module Federation once basic webpack 5 build works
-const ModuleFederationPlugin = null; // Temporarily disabled
+// Re-enable Module Federation for shared dependencies federation
+const ModuleFederationPlugin = require('webpack').container.ModuleFederationPlugin;
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const { REPO_ROOT } = require('@osd/utils');
@@ -50,8 +49,17 @@ exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
   },
 
   plugins: [
-    // TODO: Add Module Federation Plugin once basic webpack 5 build works
-    // Temporarily disabled for initial testing
+    // Module Federation Plugin - Dual approach: traditional + federated in different namespaces
+    new ModuleFederationPlugin({
+      name: 'shared_deps',
+      filename: 'remoteEntry.js',
+      exposes: {
+        // Single expose for federated loading (accept some size for functionality)
+        './SharedBundle': Path.resolve(REPO_ROOT, 'packages/osd-ui-shared-deps/entry.js'),
+      },
+      // No shared config - this bundle PROVIDES dependencies, doesn't consume them
+      // Future federated plugins will have their own shared config that consumes these
+    }),
     
     new MiniCssExtractPlugin({
       filename: '[name].css',

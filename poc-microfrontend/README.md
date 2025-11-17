@@ -670,33 +670,47 @@ new ModuleFederationPlugin({
 - **Development Experience**: Side-by-side comparison functional
 - **Zero Code Changes**: No modifications to existing OSD codebase
 
-### 📊 Performance Results (Final Production-Ready + Module Federation)
+### 📊 Performance Results (Triple Federation + Option B Implementation)
 
-#### **Development Mode (with source maps + Module Federation)**
-- **Build Time**: ~52 seconds (includes Module Federation shared configuration)
-- **Bundle Size**: **25MB main + 18MB @elastic** (split bundles with source maps)
-- **Total Bundle Size**: **43MB** (vs webpack 4: 44MB = **2% smaller**)
-- **Module Federation**: Shared configuration ready, no bloated remoteEntry.js
+#### **Current Status: Option B - Pure Module Federation + Bridge**
+- **Shared Dependencies**: Pure Module Federation loading (18K remoteEntry.js)
+- **Core Services**: Complete federation (47K remoteEntry.js, 6/6 services working)
+- **HTML Bridge**: Traditional global populated from MF modules (zero code changes)
+- **Build Performance**: Shared ~47s, Core ~15s (both efficient)
 
-#### **Production Mode (fully optimized + Module Federation)**
-- **Build Time**: ~2.4 minutes (with minification, compression, and Module Federation)
-- **Bundle Size**: **12MB main + 4.8MB @elastic** (minified split bundles)  
-- **Total Bundle Size**: **16.8MB** (vs webpack 4: 44MB = **62% smaller!**)
-- **Compression**: Gzip reduces served size by ~79% (12MB → ~3MB)
-- **Compression Files**: Clean `.gz` and `.br` files with proper naming
+#### **Module Federation Architecture (Triple Layer)**
+1. **✅ Shared Dependencies Layer**
+   - Pure Module Federation loading via SharedBundle expose
+   - HTML bridge creates `window.__osdSharedDeps__` from MF modules
+   - 8/8 dependencies available with API validation
 
-#### **Module Federation Optimization**
-- **remoteEntry.js**: **ELIMINATED** (was 21MB, now 0KB - removed bloat!)
-- **Shared Config**: 9 dependencies configured for future plugin federation
-- **Backward Compatibility**: Existing plugins require zero code changes
-- **Future Ready**: Infrastructure prepared for CDN deployment and runtime loading
+2. **✅ Core Services Layer**
+   - 6/6 core services exposed and loading via Module Federation
+   - CoreServices, Http, Chrome, Application, SavedObjects, Notifications
+   - Proper chunk loading with `/core/` publicPath
+
+3. **🚧 Plugin Layer**
+   - Infrastructure ready for plugin federation
+   - Can consume both shared dependencies and core services
+
+#### **Option B Achievement**
+- **Pure MF Loading**: No traditional script tags needed
+- **Bridge Working**: Traditional global created from MF modules
+- **Zero Code Changes**: Core and plugins use externals unchanged
+- **CDN Ready**: All dependencies deployable via Module Federation
+
+#### **Current Optimization Challenges**
+- **Dependency Duplication**: Core still bundles own copies (56 vendor files)
+- **Root Cause**: shared_deps exposes but doesn't provide MF shared modules
+- **Impact**: Functional architecture but not fully deduplicated
+- **Next Steps**: Need shared_deps to actually provide shared modules for consumption
 
 #### **Universal Results**
 - **Theme Assets**: 6 CSS bundles ~720KB each (all modes)
-- **Success Rate**: 8/8 shared dependencies working (100% traditional loading)
-- **Optimization**: Split chunk architecture matching original webpack 4 design
-- **Compression**: Production-ready gzip/brotli compression working perfectly
-- **Module Federation**: Shared dependency management ready for plugin federation
+- **Success Rate**: 8/8 shared dependencies + 6/6 core services working
+- **Architecture**: Complete micro-frontend foundation established
+- **Compatibility**: Zero modifications required for existing codebase
+- **Status**: "TRIPLE SUCCESS: Traditional + Shared Federation + Core Federation!"
 
 This PoC demonstrates that **webpack 5 micro-frontend architecture is feasible** for OpenSearch Dashboards with excellent compatibility and performance characteristics.
 

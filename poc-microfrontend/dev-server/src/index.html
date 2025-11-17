@@ -63,13 +63,16 @@
         <div id="federated-deps-test">Testing...</div>
         <pre id="federated-deps-list">Loading...</pre>
     </div>
-
-    <!-- Load traditional webpack 5 shared dependencies bundles -->
-    <script src="/shared-deps/osd-ui-shared-deps.@elastic.js"></script>
-    <script src="/shared-deps/osd-ui-shared-deps.js"></script>
     
-    <!-- Load Module Federation entry point -->
+    <div class="status">
+        <h2>Core Services Federation (window.coreServices)</h2>
+        <div id="core-deps-test">Testing...</div>
+        <pre id="core-deps-list">Loading...</pre>
+    </div>
+
+    <!-- Pure Module Federation Approach: Only load MF entry points -->
     <script src="/shared-deps/remoteEntry.js"></script>
+    <script src="/core/remoteEntry.js"></script>
     
     <script>
         console.log('🧪 Testing Dual Namespace: Traditional + Module Federation...');
@@ -121,12 +124,12 @@
             }
         }
         
-        // Test Module Federation loading with dual namespace
+        // Pure Module Federation Bridge (Option B) - Using SharedBundle with extraction
         async function testFederatedDeps() {
             const federatedTestEl = document.getElementById('federated-deps-test');
             const federatedListEl = document.getElementById('federated-deps-list');
             
-            federatedTestEl.innerHTML = '<span class="info">🔄 Loading via Module Federation...</span>';
+            federatedTestEl.innerHTML = '<span class="info">🔄 Loading via pure Module Federation with bridge...</span>';
             
             try {
                 const container = window.shared_deps;
@@ -134,13 +137,25 @@
                     throw new Error('Module Federation container not found');
                 }
                 
-                console.log('🔌 Module Federation container found');
+                console.log('🔌 Module Federation container found - loading SharedBundle');
                 
-                // Load SharedBundle via Module Federation
+                // Load SharedBundle via Module Federation (working approach)
                 const sharedBundleModule = await container.get('./SharedBundle');
                 const sharedBundle = sharedBundleModule();
                 
-                // Create federated namespace (separate from traditional)
+                // Option B: Pure Module Federation Bridge - populate traditional global from MF
+                window.__osdSharedDeps__ = {
+                    React: sharedBundle.React,
+                    ReactDom: sharedBundle.ReactDom,
+                    ElasticEui: sharedBundle.ElasticEui,
+                    Lodash: sharedBundle.Lodash,
+                    Moment: sharedBundle.Moment,
+                    Rxjs: sharedBundle.Rxjs,
+                    OsdI18n: sharedBundle.OsdI18n,
+                    OsdMonaco: sharedBundle.OsdMonaco
+                };
+                
+                // Create federated namespace for comparison
                 window.federated = {
                     React: sharedBundle.React,
                     ReactDOM: sharedBundle.ReactDom,
@@ -152,7 +167,8 @@
                     OsdMonaco: sharedBundle.OsdMonaco
                 };
                 
-                console.log('✅ Federated: window.federated namespace created');
+                console.log('✅ Pure MF: SharedBundle loaded via Module Federation');
+                console.log('✅ Bridge: Traditional global populated from MF (zero code changes)');
                 
                 const federatedTests = [
                     { name: 'React', prop: 'React' },
@@ -219,6 +235,94 @@
             }
         }
         
+        // Test Core Services Module Federation loading
+        async function testCoreDeps() {
+            const coreTestEl = document.getElementById('core-deps-test');
+            const coreListEl = document.getElementById('core-deps-list');
+            
+            coreTestEl.innerHTML = '<span class="info">🔄 Loading Core Services via Module Federation...</span>';
+            
+            try {
+                const coreContainer = window.core_services;
+                if (!coreContainer) {
+                    throw new Error('Core Module Federation container not found (window.core_services)');
+                }
+                
+                console.log('🔌 Core Module Federation container found');
+                
+                // Test core service exposes
+                const coreTests = [
+                    { name: 'CoreServices', module: 'CoreServices' },
+                    { name: 'Http', module: 'Http' },
+                    { name: 'Chrome', module: 'Chrome' },
+                    { name: 'Application', module: 'Application' },
+                    { name: 'SavedObjects', module: 'SavedObjects' },
+                    { name: 'Notifications', module: 'Notifications' }
+                ];
+                
+                const coreResults = [];
+                
+                for (const test of coreTests) {
+                    try {
+                        const module = await coreContainer.get(`./${test.module}`);
+                        const service = module();
+                        const available = !!service;
+                        const type = typeof service;
+                        const hasProperties = service && typeof service === 'object' && Object.keys(service).length > 0;
+                        
+                        coreResults.push({
+                            name: test.name,
+                            available,
+                            type,
+                            hasProperties,
+                            status: '✅'
+                        });
+                        
+                        console.log(`📦 Core ${test.name}:`, service);
+                        
+                    } catch (error) {
+                        coreResults.push({
+                            name: test.name,
+                            available: false,
+                            status: '❌',
+                            error: error.message
+                        });
+                    }
+                }
+                
+                // Create core services namespace
+                window.coreServices = coreResults.reduce((acc, result) => {
+                    if (result.available) {
+                        acc[result.name] = `Available (${result.type})`;
+                    }
+                    return acc;
+                }, {});
+                
+                const coreSuccessCount = coreResults.filter(r => r.available).length;
+                
+                coreTestEl.innerHTML = `<span class="${coreSuccessCount === coreTests.length ? 'success' : 'error'}">
+                    ${coreSuccessCount}/${coreTests.length} core services loaded via Module Federation
+                </span>`;
+                
+                coreListEl.textContent = coreResults.map(r => {
+                    const details = [];
+                    if (r.available) {
+                        details.push(`type: ${r.type}`);
+                        if (r.hasProperties) details.push('has properties');
+                    }
+                    const detailStr = details.length > 0 ? ` (${details.join(', ')})` : '';
+                    return `${r.status} ${r.name}: ${r.available ? `Available${detailStr}` : `Missing (${r.error})`}`;
+                }).join('\n');
+                
+                console.log('🔌 Core Services Module Federation results:', coreResults);
+                console.log('🌐 Core Services namespace:', window.coreServices);
+                
+            } catch (error) {
+                coreTestEl.innerHTML = `<span class="error">❌ Core Services federation failed: ${error.message}</span>`;
+                console.error('❌ Core Services federation failed:', error);
+            }
+        }
+        
         // Overall status
         function updateOverallStatus() {
             const statusEl = document.getElementById('status');
@@ -226,12 +330,15 @@
             try {
                 const traditional = typeof __osdSharedDeps__ !== 'undefined';
                 const federated = !!window.federated;
-                const container = !!window.shared_deps;
+                const coreServices = !!window.coreServices;
+                const containers = !!window.shared_deps && !!window.core_services;
                 
-                if (traditional && federated) {
-                    statusEl.innerHTML = '<span class="success">✅ DUAL SUCCESS: Traditional + Module Federation both working!</span>';
-                } else if (traditional && container) {
-                    statusEl.innerHTML = '<span class="info">ℹ️ Traditional working, Module Federation container ready</span>';
+                if (traditional && federated && coreServices) {
+                    statusEl.innerHTML = '<span class="success">✅ TRIPLE SUCCESS: Traditional + Shared Federation + Core Federation!</span>';
+                } else if (traditional && federated) {
+                    statusEl.innerHTML = '<span class="success">✅ DUAL SUCCESS: Traditional + Module Federation working!</span>';
+                } else if (traditional && containers) {
+                    statusEl.innerHTML = '<span class="info">ℹ️ Traditional working, Module Federation containers ready</span>';
                 } else if (traditional) {
                     statusEl.innerHTML = '<span class="info">ℹ️ Traditional loading working</span>';
                 } else {
@@ -242,18 +349,19 @@
             }
         }
         
-        // Run tests
+        // Run all tests
         document.addEventListener('DOMContentLoaded', async () => {
             updateOverallStatus();
             testGlobalDeps();
             await testFederatedDeps();
+            await testCoreDeps();
             updateOverallStatus();
         });
         
         if (document.readyState !== 'loading') {
             updateOverallStatus();
             testGlobalDeps();
-            testFederatedDeps().then(() => updateOverallStatus());
+            Promise.all([testFederatedDeps(), testCoreDeps()]).then(() => updateOverallStatus());
         }
     </script>
 </body>

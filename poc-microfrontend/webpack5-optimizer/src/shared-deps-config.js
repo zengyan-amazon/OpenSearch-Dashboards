@@ -54,11 +54,11 @@ exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
       name: 'shared_deps',
       filename: 'remoteEntry.js',
       exposes: {
-        // Single expose for federated loading (accept some size for functionality)
+        // Single expose for Module Federation (working approach for Option B)
         './SharedBundle': Path.resolve(REPO_ROOT, 'packages/osd-ui-shared-deps/entry.js'),
       },
-      // No shared config - this bundle PROVIDES dependencies, doesn't consume them
-      // Future federated plugins will have their own shared config that consumes these
+      // No shared config - this bundle PROVIDES dependencies but doesn't consume them
+      // Traditional bundling for __osdSharedDeps__ global + MF providing for core consumption
     }),
     
     new MiniCssExtractPlugin({

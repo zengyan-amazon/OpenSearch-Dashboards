@@ -70,7 +70,7 @@ const server = http.createServer((req, res) => {
     return;
   }
   
-  // Serve webpack 5 built assets
+  // Serve webpack 5 shared dependencies built assets
   if (pathname.startsWith('/shared-deps/')) {
     const fileName = pathname.replace('/shared-deps/', '');
     const filePath = path.resolve(DIST_DIR, 'shared-deps', fileName);
@@ -78,10 +78,24 @@ const server = http.createServer((req, res) => {
     return;
   }
   
+  // Serve webpack 5 core bundle assets
+  if (pathname.startsWith('/core/')) {
+    const fileName = pathname.replace('/core/', '');
+    const filePath = path.resolve(DIST_DIR, 'core', fileName);
+    serveFile(filePath, res);
+    return;
+  }
+  
   // Serve Module Federation chunks (requested from root by remoteEntry.js)
-  const chunkFile = path.resolve(DIST_DIR, 'shared-deps', pathname.slice(1));
-  if (fs.existsSync(chunkFile)) {
-    serveFile(chunkFile, res);
+  const sharedChunkFile = path.resolve(DIST_DIR, 'shared-deps', pathname.slice(1));
+  if (fs.existsSync(sharedChunkFile)) {
+    serveFile(sharedChunkFile, res);
+    return;
+  }
+  
+  const coreChunkFile = path.resolve(DIST_DIR, 'core', pathname.slice(1));
+  if (fs.existsSync(coreChunkFile)) {
+    serveFile(coreChunkFile, res);
     return;
   }
   

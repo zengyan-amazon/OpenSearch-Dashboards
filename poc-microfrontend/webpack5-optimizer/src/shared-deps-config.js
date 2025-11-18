@@ -58,7 +58,7 @@ exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
         './SharedBundle': Path.resolve(REPO_ROOT, 'packages/osd-ui-shared-deps/entry.js'),
       },
       // No shared config - this bundle PROVIDES dependencies but doesn't consume them
-      // Traditional bundling for __osdSharedDeps__ global + MF providing for core consumption
+      // Traditional bundling for __osdSharedDeps__ global + MF expose for federated access
     }),
     
     new MiniCssExtractPlugin({

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width" />
+    <title>OpenSearch Dashboards - Micro-Frontend</title>
+    
+    <!-- Favicon (using OSD default structure) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/ui/favicons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/ui/favicons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/ui/favicons/favicon-16x16.png" />
+    <link rel="shortcut icon" href="/ui/favicons/favicon.ico" />
+    
+    <!-- OSD Styles injection point -->
+    <meta name="add-styles-here" />
+    <meta name="add-scripts-here" />
+</head>
+<body>
+    <!-- OSD CSP Element (mirrors template.tsx) -->
+    <osd-csp data='{"strictCsp": false}'></osd-csp>
+    
+    <!-- OSD Injected Metadata Element (formatted for easy editing) -->
+    <osd-injected-metadata data='{
+        "version": "3.3.0",
+        "buildNumber": 8467,
+        "branch": "main",
+        "basePath": "",
+        "serverBasePath": "",
+        "env": {
+            "mode": {
+                "dev": true,
+                "name": "development",
+                "prod": false
+            },
+            "packageInfo": {
+                "branch": "main",
+                "buildNum": 8467,
+                "buildSha": "6cb7fec4e154faa0a4a3fee4b33dfef91b9870d9",
+                "version": "3.3.0",
+                "dist": false
+            }
+        },
+        "anonymousStatusPage": false,
+        "i18n": {
+            "translationsUrl": "/translations/en.json"
+        },
+        "csp": {
+            "warnLegacyBrowsers": false
+        },
+        "vars": {},
+        "uiPlugins": [
+            {
+                "id": "usageCollection",
+                "plugin": {
+                    "id": "usageCollection",
+                    "configPath": ["usageCollection"],
+                    "requiredPlugins": [],
+                    "optionalPlugins": [],
+                    "requiredBundles": ["opensearchDashboardsUtils"],
+                    "requiredEnginePlugins": {}
+                },
+                "config": {
+                    "uiMetric": {
+                        "enabled": false,
+                        "debug": false,
+                        "batchingIntervalInS": 60
+                    }
+                }
+            },
+            {
+                "id": "opensearchDashboardsLegacy",
+                "plugin": {
+                    "id": "opensearchDashboardsLegacy",
+                    "configPath": "opensearch_dashboards_legacy",
+                    "requiredPlugins": [],
+                    "optionalPlugins": [],
+                    "requiredBundles": [],
+                    "requiredEnginePlugins": {}
+                },
+                "config": {
+                    "defaultAppId": "home"
+                }
+            }
+        ],
+        "legacyMetadata": {
+            "uiSettings": {
+                "defaults": {
+                    "accessibility:disableAnimations": {
+                        "name": "Disable Animations",
+                        "value": false,
+                        "description": "Turn off all unnecessary animations in the OpenSearch Dashboards UI. Refresh the page to apply the changes.",
+                        "category": ["appearance"],
+                        "requiresPageReload": true
+                    },
+                    "dateFormat": {
+                        "name": "Date format",
+                        "value": "MMM D, YYYY @ HH:mm:ss.SSS",
+                        "description": "When displaying a pretty formatted date, use this format"
+                    },
+                    "dateFormat:tz": {
+                        "name": "Timezone for date formatting",
+                        "value": "Browser",
+                        "description": "Which timezone should be used. \"Browser\" will use the timezone detected by your browser.",
+                        "type": "select",
+                        "options": ["Browser"],
+                        "requiresPageReload": true
+                    },
+                    "theme:darkMode": {
+                        "name": "Dark mode",
+                        "value": false,
+                        "description": "Enable a dark mode for the OpenSearch Dashboards UI. A page refresh is required for the setting to be applied.",
+                        "requiresPageReload": true,
+                        "category": ["appearance"]
+                    },
+                    "theme:version": {
+                        "name": "Theme version",
+                        "value": "Next (preview)",
+                        "type": "select",
+                        "options": ["v7", "Next (preview)"],
+                        "description": "Switch between the themes used for the current and next versions of OpenSearch Dashboards. A page refresh is required for the setting to be applied.",
+                        "requiresPageReload": true,
+                        "category": ["appearance"]
+                    },
+                    "defaultRoute": {
+                        "name": "Default route",
+                        "value": "/app/home",
+                        "description": "This setting specifies the default route when opening OpenSearch Dashboards, You can use this setting to modify the landing page when opening OpenSearch Dashboards, The route must be a relative URL."
+                    },
+                    "pageNavigation": {
+                        "name": "Side nav style",
+                        "value": "modern",
+                        "description": "Change the style of navigation",
+                        "type": "select",
+                        "options": ["modern", "legacy"],
+                        "optionLabels": {
+                            "modern": "Modern",
+                            "legacy": "Legacy"
+                        },
+                        "category": ["appearance"]
+                    }
+                },
+                "user": {}
+            }
+        },
+        "branding": {
+            "darkMode": false,
+            "assetFolderUrl": "/ui/default_branding",
+            "logo": {},
+            "mark": {},
+            "loadingLogo": {},
+            "applicationTitle": "OpenSearch Dashboards",
+            "useExpandedHeader": true
+        },
+        "survey": "",
+        "keyboardShortcuts": {
+            "enabled": true
+        }
+    }'></osd-injected-metadata>
+    
+    <!-- OSD Loading Message (mirrors template.tsx) -->
+    <div class="osdWelcomeView" id="osd_loading_message" style="display: none;" data-test-subj="osdLoadingMessage">
+        <div class="osdLoaderWrap" data-test-subj="loadingLogo">
+            <div class="loadingLogoContainer">
+                <img class="loadingLogo darkOnly" src="/ui/default_branding/opensearch_spinner_on_light.svg" alt="OpenSearch Dashboards logo" loading="eager" />
+                <img class="loadingLogo lightOnly" src="/ui/default_branding/opensearch_spinner_on_dark.svg" alt="OpenSearch Dashboards logo" loading="eager" />
+            </div>
+            <div class="osdWelcomeText" data-error-message="OpenSearch Dashboards did not load properly. Check the server output for more information.">
+                Loading OpenSearch Dashboards
+            </div>
+            <div class="osdProgress darkOnly"></div>
+            <div class="osdProgress lightOnly"></div>
+        </div>
+    </div>
+    
+    <!-- OSD Legacy Browser Error (mirrors template.tsx) -->
+    <div class="osdWelcomeView" id="osd_legacy_browser_error" style="display: none;">
+        <img src="/ui/default_branding/opensearch_mark_default.svg" alt="OpenSearch Dashboards logo" class="legacyBrowserErrorLogo darkOnly" />
+        <img src="/ui/default_branding/opensearch_mark_default.svg" alt="OpenSearch Dashboards logo" class="legacyBrowserErrorLogo lightOnly" />
+        <h2 class="osdWelcomeTitle">Please upgrade your browser</h2>
+        <div class="osdWelcomeText">This OpenSearch installation has strict security requirements enabled that your current browser does not meet.</div>
+    </div>
+
+    <!-- CSP Test Script (mirrors template.tsx) -->
+    <script>
+        // Since this is an unsafe inline script, this code will not run
+        // in browsers that support content security policy(CSP). This is
+        // intentional as we check for the existence of __osdCspNotEnforced__ in
+        // bootstrap.
+        window.__osdCspNotEnforced__ = true;
+    </script>
+
+    <!-- Module Federation Bootstrap Script (adapted from bootstrap.js.hbs) -->
+    <script>
+        console.log('🚀 Starting OSD Module Federation Bootstrap...');
+        
+        // Setup OSD global variables (mirrors bootstrap.js.hbs)
+        var osdCsp = JSON.parse(document.querySelector('osd-csp').getAttribute('data'));
+        window.__osdStrictCsp__ = osdCsp.strictCsp;
+        window.__osdPublicPath__ = { "bundles": "/bundles/", "osd-ui-shared-deps": "/shared-deps/" };
+        window.__osdThemeTag__ = 'v8light'; // Default theme
+        
+        // Check CSP and show loading or error
+        if (window.__osdStrictCsp__ && window.__osdCspNotEnforced__) {
+            var legacyBrowserError = document.getElementById('osd_legacy_browser_error');
+            legacyBrowserError.style.display = 'flex';
+        } else {
+            if (!window.__osdCspNotEnforced__ && window.console) {
+                window.console.log("^ A single error about an inline script not firing due to content security policy is expected!");
+            }
+
+            // Show loading message
+            var loadingMessage = document.getElementById('osd_loading_message');
+            loadingMessage.style.display = 'flex';
+
+            // OSD Module Federation Bootstrap
+            window.onload = async function () {
+                console.log('🔧 Loading OSD via Module Federation...');
+                
+                try {
+                    // Step 1: Load CSS stylesheets (same as original bootstrap)
+                    const styleSheetPaths = [
+                        '/shared-deps/osd-ui-shared-deps.css',
+                        '/shared-deps/osd-ui-shared-deps.v8.light.css'
+                    ];
+                    
+                    function loadStyleSheet(url) {
+                        return new Promise((resolve, reject) => {
+                            var dom = document.createElement('link');
+                            dom.rel = 'stylesheet';
+                            dom.type = 'text/css';
+                            dom.href = url;
+                            dom.addEventListener('error', reject);
+                            dom.addEventListener('load', resolve);
+                            var target = document.querySelector('head meta[name="add-styles-here"]');
+                            document.head.insertBefore(dom, target);
+                        });
+                    }
+                    
+                    // Load all stylesheets
+                    await Promise.all(styleSheetPaths.map(loadStyleSheet));
+                    console.log('✅ Theme CSS loaded');
+                    
+                    // Step 2: Load Module Federation containers
+                    const sharedContainer = window.shared_deps;
+                    const coreContainer = window.core_services;
+                    
+                    if (!sharedContainer || !coreContainer) {
+                        throw new Error('Module Federation containers not found');
+                    }
+                    
+                    // Step 3: Load shared dependencies via Module Federation (Option B)
+                    const sharedBundleModule = await sharedContainer.get('./SharedBundle');
+                    const sharedBundle = sharedBundleModule();
+                    
+                    // Create traditional global for compatibility
+                    window.__osdSharedDeps__ = {
+                        React: sharedBundle.React,
+                        ReactDom: sharedBundle.ReactDom,
+                        ElasticEui: sharedBundle.ElasticEui,
+                        Lodash: sharedBundle.Lodash,
+                        Moment: sharedBundle.Moment,
+                        Rxjs: sharedBundle.Rxjs,
+                        OsdI18n: sharedBundle.OsdI18n,
+                        OsdMonaco: sharedBundle.OsdMonaco
+                    };
+                    console.log('✅ Shared dependencies loaded via Module Federation');
+                    
+                    // Step 4: Load core services via Module Federation
+                    const coreServicesModule = await coreContainer.get('./CoreServices');
+                    const coreServices = coreServicesModule();
+                    
+                    // Step 5: Setup complete __osdBundles__ global interface (compatibility)
+                    window.__osdBundles__ = {
+                        get: function(bundleName) {
+                            if (bundleName === 'entry/core/public') {
+                                return coreServices; // Return core services from MF
+                            }
+                            return null;
+                        },
+                        has: function(bundleName) {
+                            return bundleName === 'entry/core/public';
+                        },
+                        getIds: function() {
+                            return ['entry/core/public'];
+                        }
+                    };
+                    
+                    console.log('✅ Core services loaded via Module Federation');
+                    
+                    // Step 6: Call OSD bootstrap (same as traditional)
+                    if (coreServices && coreServices.__osdBootstrap__) {
+                        coreServices.__osdBootstrap__();
+                        console.log('🎉 OSD Application bootstrapped via Module Federation!');
+                    } else {
+                        console.log('🔧 Core services loaded, manual initialization required');
+                        // Hide loading message to show our federation worked
+                        loadingMessage.style.display = 'none';
+                        document.body.innerHTML += '<div style="padding: 40px; text-align: center;"><h1>🎉 OSD Module Federation Ready!</h1><p>Core services loaded successfully via Module Federation</p></div>';
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ OSD Module Federation bootstrap failed:', error);
+                    // Show error in loading message
+                    loadingMessage.querySelector('.osdWelcomeText').textContent = 'Module Federation bootstrap failed: ' + error.message;
+                }
+            };
+        }
+    </script>
+    
+    <!-- Load Module Federation entry points -->
+    <script src="/shared-deps/remoteEntry.js"></script>
+    <script src="/core/remoteEntry.js"></script>
+</body>
+</html>

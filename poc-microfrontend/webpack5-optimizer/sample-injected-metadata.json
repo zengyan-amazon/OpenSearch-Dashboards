@@ -1,0 +1,2782 @@
+{
+    "version": "2.15.0",
+    "buildNumber": 701202401,
+    "branch": "2.x",
+    "basePath": "/_dashboards",
+    "serverBasePath": "/_dashboards",
+    "env": {
+        "mode": {
+            "dev": false,
+            "name": "production",
+            "prod": true
+        },
+        "packageInfo": {
+            "branch": "2.x",
+            "buildNum": 701202401,
+            "buildSha": "7d9fcbe63a0a3cafbabba62306be999fd2dce5b4",
+            "version": "2.15.0",
+            "dist": true
+        }
+    },
+    "anonymousStatusPage": false,
+    "i18n": {
+        "translationsUrl": "/_dashboards/translations/en.json"
+    },
+    "csp": {
+        "warnLegacyBrowsers": true
+    },
+    "vars": {},
+    "uiPlugins": [
+        {
+            "id": "usageCollection",
+            "plugin": {
+                "id": "usageCollection",
+                "configPath": [
+                    "usageCollection"
+                ],
+                "requiredPlugins": [],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "uiMetric": {
+                    "enabled": false,
+                    "debug": false,
+                    "batchingIntervalInS": 60
+                }
+            }
+        },
+        {
+            "id": "mapsLegacy",
+            "plugin": {
+                "id": "mapsLegacy",
+                "configPath": [
+                    "map"
+                ],
+                "requiredPlugins": [],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsReact",
+                    "charts"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "includeOpenSearchMapsService": true,
+                "proxyOpenSearchMapsServiceInMaps": false,
+                "showRegionDeniedWarning": true,
+                "tilemap": {
+                    "options": {
+                        "attribution": "",
+                        "minZoom": 0,
+                        "maxZoom": 10
+                    }
+                },
+                "regionmap": {
+                    "includeOpenSearchMapsService": true,
+                    "layers": []
+                },
+                "manifestServiceUrl": "",
+                "opensearchManifestServiceUrl": "https://maps.search-services.aws.a2z.com/v4/us-east-1/manifest",
+                "emsFileApiUrl": "https://vectors.maps.opensearch.org",
+                "emsTileApiUrl": "https://tiles.maps.opensearch.org",
+                "emsLandingPageUrl": "https://maps.opensearch.org",
+                "emsFontLibraryUrl": "https://tiles.maps.opensearch.org/fonts/{fontstack}/{range}.pbf",
+                "emsTileLayerId": {
+                    "bright": "road_map",
+                    "desaturated": "road_map_desaturated",
+                    "dark": "dark_map"
+                }
+            }
+        },
+        {
+            "id": "opensearchDashboardsLegacy",
+            "plugin": {
+                "id": "opensearchDashboardsLegacy",
+                "configPath": "opensearch_dashboards_legacy",
+                "requiredPlugins": [],
+                "optionalPlugins": [],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "defaultAppId": "home"
+            }
+        },
+        {
+            "id": "urlForwarding",
+            "plugin": {
+                "id": "urlForwarding",
+                "configPath": "url_forwarding",
+                "requiredPlugins": [
+                    "opensearchDashboardsLegacy"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "visDefaultEditor",
+            "plugin": {
+                "id": "visDefaultEditor",
+                "configPath": "vis_default_editor",
+                "requiredPlugins": [],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "opensearchDashboardsReact",
+                    "data"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "opensearchDashboardsUtils",
+            "plugin": {
+                "id": "opensearchDashboardsUtils",
+                "configPath": "opensearch_dashboards_utils",
+                "requiredPlugins": [],
+                "optionalPlugins": [],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "share",
+            "plugin": {
+                "id": "share",
+                "configPath": "share",
+                "requiredPlugins": [],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "opensearchUiShared",
+            "plugin": {
+                "id": "opensearchUiShared",
+                "configPath": "opensearch_ui_shared",
+                "requiredPlugins": [],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "data"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "uiActions",
+            "plugin": {
+                "id": "uiActions",
+                "configPath": "ui_actions",
+                "requiredPlugins": [],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "opensearchDashboardsReact"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "opensearchDashboardsReact",
+            "plugin": {
+                "id": "opensearchDashboardsReact",
+                "configPath": "opensearch_dashboards_react",
+                "requiredPlugins": [],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "inspector",
+            "plugin": {
+                "id": "inspector",
+                "configPath": "inspector",
+                "requiredPlugins": [],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsReact"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "embeddable",
+            "plugin": {
+                "id": "embeddable",
+                "configPath": "embeddable",
+                "requiredPlugins": [
+                    "inspector",
+                    "uiActions"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "savedObjects",
+                    "opensearchDashboardsReact",
+                    "opensearchDashboardsUtils"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "expressions",
+            "plugin": {
+                "id": "expressions",
+                "configPath": "expressions",
+                "requiredPlugins": [],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "inspector",
+                    "data"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "data",
+            "plugin": {
+                "id": "data",
+                "configPath": "data",
+                "requiredPlugins": [
+                    "expressions",
+                    "uiActions"
+                ],
+                "optionalPlugins": [
+                    "usageCollection"
+                ],
+                "requiredBundles": [
+                    "usageCollection",
+                    "opensearchDashboardsUtils",
+                    "opensearchDashboardsReact",
+                    "inspector"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "enhancements": {
+                    "enabled": false
+                },
+                "autocomplete": {
+                    "querySuggestions": {
+                        "enabled": true
+                    },
+                    "valueSuggestions": {
+                        "enabled": true
+                    }
+                },
+                "search": {
+                    "aggs": {
+                        "shardDelay": {
+                            "enabled": false
+                        }
+                    },
+                    "usageTelemetry": {
+                        "enabled": false
+                    }
+                }
+            }
+        },
+        {
+            "id": "securityAnalyticsDashboards",
+            "plugin": {
+                "id": "securityAnalyticsDashboards",
+                "configPath": [
+                    "opensearch_security_analytics"
+                ],
+                "requiredPlugins": [
+                    "data"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "enabled": true,
+                "uxTelemetryInterval": 2
+            }
+        },
+        {
+            "id": "savedObjects",
+            "plugin": {
+                "id": "savedObjects",
+                "configPath": "saved_objects",
+                "requiredPlugins": [
+                    "data"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "opensearchDashboardsReact"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "home",
+            "plugin": {
+                "id": "home",
+                "configPath": "home",
+                "requiredPlugins": [
+                    "data",
+                    "urlForwarding",
+                    "savedObjects"
+                ],
+                "optionalPlugins": [
+                    "usageCollection"
+                ],
+                "requiredBundles": [
+                    "opensearchDashboardsReact",
+                    "dataSourceManagement"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "disableWelcomeScreen": false,
+                "disableNewThemeModal": false
+            }
+        },
+        {
+            "id": "apmOss",
+            "plugin": {
+                "id": "apmOss",
+                "configPath": [
+                    "apm_oss"
+                ],
+                "requiredPlugins": [
+                    "home"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "navigation",
+            "plugin": {
+                "id": "navigation",
+                "configPath": "navigation",
+                "requiredPlugins": [
+                    "data"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsReact",
+                    "dataSourceManagement"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "reportsDashboards",
+            "plugin": {
+                "id": "reportsDashboards",
+                "configPath": [
+                    "opensearch_reporting"
+                ],
+                "requiredPlugins": [
+                    "navigation",
+                    "data",
+                    "opensearchDashboardsUtils"
+                ],
+                "optionalPlugins": [
+                    "share"
+                ],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "searchRelevanceDashboards",
+            "plugin": {
+                "id": "searchRelevanceDashboards",
+                "configPath": "search_relevance_dashboards",
+                "requiredPlugins": [
+                    "navigation"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "dashboard",
+            "plugin": {
+                "id": "dashboard",
+                "configPath": "dashboard",
+                "requiredPlugins": [
+                    "data",
+                    "embeddable",
+                    "inspector",
+                    "opensearchDashboardsLegacy",
+                    "urlForwarding",
+                    "navigation",
+                    "uiActions",
+                    "savedObjects"
+                ],
+                "optionalPlugins": [
+                    "home",
+                    "share",
+                    "usageCollection"
+                ],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "opensearchDashboardsReact",
+                    "home"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "allowByValueEmbeddables": false
+            }
+        },
+        {
+            "id": "mlCommonsDashboards",
+            "plugin": {
+                "id": "mlCommonsDashboards",
+                "configPath": "ml_commons_dashboards",
+                "requiredPlugins": [
+                    "navigation",
+                    "data",
+                    "opensearchDashboardsReact",
+                    "opensearchDashboardsUtils",
+                    "dashboard",
+                    "opensearchUiShared"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "visualizations",
+            "plugin": {
+                "id": "visualizations",
+                "configPath": "visualizations",
+                "requiredPlugins": [
+                    "data",
+                    "expressions",
+                    "uiActions",
+                    "embeddable",
+                    "inspector",
+                    "dashboard"
+                ],
+                "optionalPlugins": [
+                    "usageCollection"
+                ],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "discover",
+                    "savedObjects",
+                    "visAugmenter"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "visTypeVega",
+            "plugin": {
+                "id": "visTypeVega",
+                "configPath": "vis_type_vega",
+                "requiredPlugins": [
+                    "data",
+                    "visualizations",
+                    "mapsLegacy",
+                    "expressions",
+                    "inspector",
+                    "uiActions"
+                ],
+                "optionalPlugins": [
+                    "home",
+                    "usageCollection"
+                ],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "opensearchDashboardsReact",
+                    "visDefaultEditor",
+                    "visAugmenter"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "enableExternalUrls": false
+            }
+        },
+        {
+            "id": "visTypeTable",
+            "plugin": {
+                "id": "visTypeTable",
+                "configPath": "vis_type_table",
+                "requiredPlugins": [
+                    "expressions",
+                    "visualizations",
+                    "data"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "opensearchDashboardsReact",
+                    "share",
+                    "charts",
+                    "visDefaultEditor"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "visTypeTimeline",
+            "plugin": {
+                "id": "visTypeTimeline",
+                "configPath": "vis_type_timeline",
+                "requiredPlugins": [
+                    "visualizations",
+                    "data",
+                    "expressions"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "opensearchDashboardsReact",
+                    "visDefaultEditor"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "visAugmenter",
+            "plugin": {
+                "id": "visAugmenter",
+                "configPath": "vis_augmenter",
+                "requiredPlugins": [
+                    "data",
+                    "savedObjects",
+                    "opensearchDashboardsUtils",
+                    "expressions",
+                    "visualizations",
+                    "uiActions",
+                    "embeddable"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsReact",
+                    "savedObjectsManagement"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "pluginAugmentationEnabled": true
+            }
+        },
+        {
+            "id": "anomalyDetectionDashboards",
+            "plugin": {
+                "id": "anomalyDetectionDashboards",
+                "configPath": [
+                    "anomaly_detection_dashboards"
+                ],
+                "requiredPlugins": [
+                    "opensearchDashboardsUtils",
+                    "expressions",
+                    "data",
+                    "visAugmenter",
+                    "uiActions",
+                    "dashboard",
+                    "embeddable",
+                    "opensearchDashboardsReact",
+                    "savedObjects",
+                    "visAugmenter",
+                    "opensearchDashboardsUtils"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "enabled": true
+            }
+        },
+        {
+            "id": "alertingDashboards",
+            "plugin": {
+                "id": "alertingDashboards",
+                "configPath": [
+                    "opensearch_alerting"
+                ],
+                "requiredPlugins": [
+                    "uiActions",
+                    "dashboard",
+                    "embeddable",
+                    "opensearchDashboardsReact",
+                    "savedObjects",
+                    "expressions",
+                    "data",
+                    "visAugmenter",
+                    "opensearchDashboardsUtils"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "enabled": true
+            }
+        },
+        {
+            "id": "visBuilder",
+            "plugin": {
+                "id": "visBuilder",
+                "configPath": "vis_builder",
+                "requiredPlugins": [
+                    "dashboard",
+                    "data",
+                    "embeddable",
+                    "expressions",
+                    "navigation",
+                    "savedObjects",
+                    "visualizations",
+                    "uiActions"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "charts",
+                    "opensearchDashboardsReact",
+                    "opensearchDashboardsUtils",
+                    "visDefaultEditor",
+                    "visTypeVislib"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "visTypeMarkdown",
+            "plugin": {
+                "id": "visTypeMarkdown",
+                "configPath": "vis_type_markdown",
+                "requiredPlugins": [
+                    "expressions",
+                    "visualizations"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsReact",
+                    "charts",
+                    "visualizations",
+                    "expressions",
+                    "visDefaultEditor"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "tileMap",
+            "plugin": {
+                "id": "tileMap",
+                "configPath": [
+                    "map",
+                    "tilemap"
+                ],
+                "requiredPlugins": [
+                    "visualizations",
+                    "expressions",
+                    "mapsLegacy",
+                    "opensearchDashboardsLegacy",
+                    "data",
+                    "share"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "charts",
+                    "visDefaultEditor"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "options": {
+                    "attribution": "",
+                    "minZoom": 0,
+                    "maxZoom": 10
+                }
+            }
+        },
+        {
+            "id": "regionMap",
+            "plugin": {
+                "id": "regionMap",
+                "configPath": [
+                    "map",
+                    "regionmap"
+                ],
+                "requiredPlugins": [
+                    "visualizations",
+                    "expressions",
+                    "mapsLegacy",
+                    "opensearchDashboardsLegacy",
+                    "data",
+                    "share",
+                    "opensearchDashboardsReact"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "charts",
+                    "visDefaultEditor"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "includeOpenSearchMapsService": true,
+                "layers": []
+            }
+        },
+        {
+            "id": "customImportMapDashboards",
+            "plugin": {
+                "id": "customImportMapDashboards",
+                "configPath": "custom_import_map_dashboards",
+                "requiredPlugins": [
+                    "regionMap",
+                    "opensearchDashboardsReact",
+                    "opensearchDashboardsUtils",
+                    "navigation",
+                    "savedObjects",
+                    "data",
+                    "embeddable",
+                    "visualizations"
+                ],
+                "optionalPlugins": [
+                    "home"
+                ],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "opensearchVectorTileDataUrl": "https://vector-tiles.maps.search-services.aws.a2z.com/data/v1.json",
+                "opensearchVectorTileStyleUrl": "https://vector-tiles.maps.search-services.aws.a2z.com/v1/manifest.json",
+                "opensearchVectorTileGlyphsUrl": "https://vector-tiles.maps.search-services.aws.a2z.com/fonts/{fontstack}/{range}.pbf"
+            }
+        },
+        {
+            "id": "inputControlVis",
+            "plugin": {
+                "id": "inputControlVis",
+                "configPath": "input_control_vis",
+                "requiredPlugins": [
+                    "data",
+                    "expressions",
+                    "visualizations",
+                    "visDefaultEditor"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsReact"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "ganttChartDashboards",
+            "plugin": {
+                "id": "ganttChartDashboards",
+                "configPath": "gantt_chart_dashboards",
+                "requiredPlugins": [
+                    "visualizations",
+                    "data"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "visualize",
+            "plugin": {
+                "id": "visualize",
+                "configPath": "visualize",
+                "requiredPlugins": [
+                    "data",
+                    "urlForwarding",
+                    "navigation",
+                    "savedObjects",
+                    "visualizations",
+                    "embeddable",
+                    "dashboard",
+                    "uiActions"
+                ],
+                "optionalPlugins": [
+                    "home",
+                    "share"
+                ],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "opensearchDashboardsReact",
+                    "home",
+                    "discover",
+                    "visDefaultEditor",
+                    "savedObjectsManagement"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "cognitoLogout",
+            "plugin": {
+                "id": "cognitoLogout",
+                "configPath": "cognito_logout",
+                "requiredPlugins": [
+                    "navigation"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "opensearchDashboardsOverview",
+            "plugin": {
+                "id": "opensearchDashboardsOverview",
+                "configPath": "opensearch_dashboards_overview",
+                "requiredPlugins": [
+                    "navigation",
+                    "data",
+                    "home"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsReact"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "managementOverview",
+            "plugin": {
+                "id": "managementOverview",
+                "configPath": "management_overview",
+                "requiredPlugins": [
+                    "navigation"
+                ],
+                "optionalPlugins": [
+                    "home"
+                ],
+                "requiredBundles": [
+                    "home"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "indexManagementDashboards",
+            "plugin": {
+                "id": "indexManagementDashboards",
+                "configPath": [
+                    "opensearch_index_management"
+                ],
+                "requiredPlugins": [
+                    "navigation",
+                    "opensearchDashboardsReact"
+                ],
+                "optionalPlugins": [
+                    "managementOverview"
+                ],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "enabled": true,
+                "leviathan_enabled": false,
+                "ultrawarm_enabled": false
+            }
+        },
+        {
+            "id": "storage",
+            "plugin": {
+                "id": "storage",
+                "configPath": [
+                    "storage"
+                ],
+                "requiredPlugins": [
+                    "navigation",
+                    "indexManagementDashboards"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "leviathan_enabled": false,
+                "ultrawarm_enabled": false
+            }
+        },
+        {
+            "id": "notificationsDashboards",
+            "plugin": {
+                "id": "notificationsDashboards",
+                "configPath": "notifications_dashboards",
+                "requiredPlugins": [
+                    "navigation",
+                    "data"
+                ],
+                "optionalPlugins": [
+                    "share",
+                    "managementOverview"
+                ],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "management",
+            "plugin": {
+                "id": "management",
+                "configPath": "management",
+                "requiredPlugins": [],
+                "optionalPlugins": [
+                    "home",
+                    "managementOverview"
+                ],
+                "requiredBundles": [
+                    "opensearchDashboardsReact",
+                    "opensearchDashboardsUtils"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "indexPatternManagement",
+            "plugin": {
+                "id": "indexPatternManagement",
+                "configPath": "index_pattern_management",
+                "requiredPlugins": [
+                    "management",
+                    "data",
+                    "urlForwarding"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsReact",
+                    "opensearchDashboardsUtils"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "advancedSettings",
+            "plugin": {
+                "id": "advancedSettings",
+                "configPath": "advanced_settings",
+                "requiredPlugins": [
+                    "management"
+                ],
+                "optionalPlugins": [
+                    "home"
+                ],
+                "requiredBundles": [
+                    "opensearchDashboardsReact",
+                    "home"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "devTools",
+            "plugin": {
+                "id": "devTools",
+                "configPath": "dev_tools",
+                "requiredPlugins": [
+                    "urlForwarding"
+                ],
+                "optionalPlugins": [
+                    "managementOverview"
+                ],
+                "requiredBundles": [
+                    "opensearchDashboardsReact"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "console",
+            "plugin": {
+                "id": "console",
+                "configPath": "console",
+                "requiredPlugins": [
+                    "devTools"
+                ],
+                "optionalPlugins": [
+                    "usageCollection",
+                    "home"
+                ],
+                "requiredBundles": [
+                    "opensearchUiShared",
+                    "opensearchDashboardsReact",
+                    "opensearchDashboardsUtils",
+                    "home"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "dataExplorer",
+            "plugin": {
+                "id": "dataExplorer",
+                "configPath": "data_explorer",
+                "requiredPlugins": [
+                    "data",
+                    "navigation",
+                    "embeddable",
+                    "expressions"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsReact",
+                    "opensearchDashboardsUtils"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "charts",
+            "plugin": {
+                "id": "charts",
+                "configPath": "charts",
+                "requiredPlugins": [],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "visDefaultEditor"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "visTypeVislib",
+            "plugin": {
+                "id": "visTypeVislib",
+                "configPath": "vis_type_vislib",
+                "requiredPlugins": [
+                    "charts",
+                    "data",
+                    "expressions",
+                    "visualizations",
+                    "opensearchDashboardsLegacy",
+                    "visTypeVega"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "visDefaultEditor",
+                    "visAugmenter"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "visTypeTimeseries",
+            "plugin": {
+                "id": "visTypeTimeseries",
+                "configPath": "vis_type_timeseries",
+                "requiredPlugins": [
+                    "charts",
+                    "data",
+                    "expressions",
+                    "visualizations"
+                ],
+                "optionalPlugins": [
+                    "usageCollection"
+                ],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "opensearchDashboardsReact"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "visTypeTagcloud",
+            "plugin": {
+                "id": "visTypeTagcloud",
+                "configPath": "vis_type_tagcloud",
+                "requiredPlugins": [
+                    "data",
+                    "expressions",
+                    "visualizations",
+                    "charts"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "opensearchDashboardsReact",
+                    "visDefaultEditor"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "visTypeMetric",
+            "plugin": {
+                "id": "visTypeMetric",
+                "configPath": "vis_type_metric",
+                "requiredPlugins": [
+                    "data",
+                    "visualizations",
+                    "charts",
+                    "expressions"
+                ],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils",
+                    "visDefaultEditor"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "discover",
+            "plugin": {
+                "id": "discover",
+                "configPath": "discover",
+                "requiredPlugins": [
+                    "charts",
+                    "data",
+                    "dataExplorer",
+                    "embeddable",
+                    "inspector",
+                    "opensearchDashboardsLegacy",
+                    "urlForwarding",
+                    "navigation",
+                    "uiActions",
+                    "visualizations"
+                ],
+                "optionalPlugins": [
+                    "home",
+                    "share"
+                ],
+                "requiredBundles": [
+                    "home",
+                    "opensearchDashboardsUtils",
+                    "savedObjects",
+                    "opensearchDashboardsReact"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "savedObjectsManagement",
+            "plugin": {
+                "id": "savedObjectsManagement",
+                "configPath": "saved_objects_management",
+                "requiredPlugins": [
+                    "management",
+                    "data",
+                    "uiActions"
+                ],
+                "optionalPlugins": [
+                    "dashboard",
+                    "visualizations",
+                    "discover",
+                    "home",
+                    "visBuilder",
+                    "visAugmenter"
+                ],
+                "requiredBundles": [
+                    "opensearchDashboardsReact",
+                    "home"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "securityDashboards",
+            "plugin": {
+                "id": "securityDashboards",
+                "configPath": [
+                    "opensearch_security"
+                ],
+                "requiredPlugins": [
+                    "navigation",
+                    "savedObjectsManagement"
+                ],
+                "optionalPlugins": [
+                    "managementOverview"
+                ],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "enabled": true,
+                "auth": {
+                    "type": "basicauth",
+                    "unauthenticated_routes": [
+                        "/api/reporting/stats",
+                        "/api/status"
+                    ],
+                    "anonymous_auth_enabled": false,
+                    "forbidden_usernames": [],
+                    "logout_url": "",
+                    "multiple_auth_enabled": false
+                },
+                "ui": {
+                    "backend_configurable": false,
+                    "basicauth": {
+                        "login": {
+                            "title": "Log in to OpenSearch Dashboards",
+                            "subtitle": "If you have forgotten your username or password, contact your system administrator.",
+                            "showbrandimage": true,
+                            "brandimage": "",
+                            "buttonstyle": ""
+                        }
+                    },
+                    "anonymous": {
+                        "login": {
+                            "buttonname": "Log in as anonymous",
+                            "showbrandimage": false,
+                            "brandimage": "",
+                            "buttonstyle": ""
+                        }
+                    },
+                    "openid": {
+                        "login": {
+                            "buttonname": "Log in with single sign-on",
+                            "showbrandimage": false,
+                            "brandimage": "",
+                            "buttonstyle": ""
+                        }
+                    },
+                    "saml": {
+                        "login": {
+                            "buttonname": "Log in with single sign-on",
+                            "showbrandimage": false,
+                            "brandimage": "",
+                            "buttonstyle": ""
+                        }
+                    },
+                    "autologout": true
+                },
+                "multitenancy": {
+                    "enabled": true,
+                    "tenants": {
+                        "preferred": [
+                            "Global",
+                            "Private"
+                        ],
+                        "enable_private": true,
+                        "enable_global": true
+                    },
+                    "show_roles": false,
+                    "enable_filter": false,
+                    "debug": false,
+                    "enable_aggregation_view": false
+                },
+                "readonly_mode": {
+                    "roles": [
+                        "opensearch_dashboards_read_only"
+                    ]
+                },
+                "clusterPermissions": {
+                    "include": [
+                        "cluster:admin/cold/delete",
+                        "cluster:admin/cold/indices/info",
+                        "cluster:admin/cold/indices/search",
+                        "cluster:admin/cold/metadata/update",
+                        "cluster:admin/cold/migration/cancel",
+                        "cluster:admin/cold/migration/warm",
+                        "cluster:admin/ultrawarm/migration/cold",
+                        "cluster:admin/ultrawarm/migration/list",
+                        "cluster:admin/ultrawarm/status"
+                    ]
+                },
+                "indexPermissions": {
+                    "include": [
+                        "indices:admin/ultrawarm/migration/cancel",
+                        "indices:admin/ultrawarm/migration/get",
+                        "indices:admin/ultrawarm/migration/hot",
+                        "indices:admin/ultrawarm/migration/warm"
+                    ]
+                },
+                "disabledTransportCategories": {
+                    "exclude": [
+                        "BAD_HEADERS",
+                        "SSL_EXCEPTION"
+                    ]
+                },
+                "disabledRestCategories": {
+                    "exclude": [
+                        "BAD_HEADERS",
+                        "SSL_EXCEPTION"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "observabilityDashboards",
+            "plugin": {
+                "id": "observabilityDashboards",
+                "configPath": [
+                    "observability"
+                ],
+                "requiredPlugins": [
+                    "charts",
+                    "dashboard",
+                    "data",
+                    "embeddable",
+                    "inspector",
+                    "navigation",
+                    "opensearchDashboardsReact",
+                    "opensearchDashboardsUtils",
+                    "savedObjects",
+                    "uiActions",
+                    "urlForwarding",
+                    "visualizations"
+                ],
+                "optionalPlugins": [
+                    "managementOverview",
+                    "securityDashboards"
+                ],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {
+                "query_assist": {
+                    "enabled": true
+                },
+                "summarize": {
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "id": "queryWorkbenchDashboards",
+            "plugin": {
+                "id": "queryWorkbenchDashboards",
+                "configPath": "query_workbench_dashboards",
+                "requiredPlugins": [
+                    "navigation",
+                    "opensearchDashboardsReact",
+                    "opensearchDashboardsUtils"
+                ],
+                "optionalPlugins": [
+                    "observabilityDashboards"
+                ],
+                "requiredBundles": [],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        },
+        {
+            "id": "bfetch",
+            "plugin": {
+                "id": "bfetch",
+                "configPath": "bfetch",
+                "requiredPlugins": [],
+                "optionalPlugins": [],
+                "requiredBundles": [
+                    "opensearchDashboardsUtils"
+                ],
+                "requiredEnginePlugins": {}
+            },
+            "config": {}
+        }
+    ],
+    "legacyMetadata": {
+        "uiSettings": {
+            "defaults": {
+                "accessibility:disableAnimations": {
+                    "name": "Disable Animations",
+                    "value": false,
+                    "description": "Turn off all unnecessary animations in the OpenSearch Dashboards UI. Refresh the page to apply the changes.",
+                    "category": [
+                        "appearance"
+                    ],
+                    "requiresPageReload": true
+                },
+                "dateFormat": {
+                    "name": "Date format",
+                    "value": "MMM D, YYYY @ HH:mm:ss.SSS",
+                    "description": "When displaying a pretty formatted date, use this <a href=\"https://momentjs.com/docs/#/displaying/format/\" target=\"_blank\" rel=\"noopener noreferrer\">format</a>"
+                },
+                "dateFormat:tz": {
+                    "name": "Timezone for date formatting",
+                    "value": "Browser",
+                    "description": "Which timezone should be used. \"Browser\" will use the timezone detected by your browser.",
+                    "type": "select",
+                    "options": [
+                        "Browser",
+                        "Africa/Abidjan",
+                        "Africa/Accra",
+                        "Africa/Addis_Ababa",
+                        "Africa/Algiers",
+                        "Africa/Asmara",
+                        "Africa/Asmera",
+                        "Africa/Bamako",
+                        "Africa/Bangui",
+                        "Africa/Banjul",
+                        "Africa/Bissau",
+                        "Africa/Blantyre",
+                        "Africa/Brazzaville",
+                        "Africa/Bujumbura",
+                        "Africa/Cairo",
+                        "Africa/Casablanca",
+                        "Africa/Ceuta",
+                        "Africa/Conakry",
+                        "Africa/Dakar",
+                        "Africa/Dar_es_Salaam",
+                        "Africa/Djibouti",
+                        "Africa/Douala",
+                        "Africa/El_Aaiun",
+                        "Africa/Freetown",
+                        "Africa/Gaborone",
+                        "Africa/Harare",
+                        "Africa/Johannesburg",
+                        "Africa/Juba",
+                        "Africa/Kampala",
+                        "Africa/Khartoum",
+                        "Africa/Kigali",
+                        "Africa/Kinshasa",
+                        "Africa/Lagos",
+                        "Africa/Libreville",
+                        "Africa/Lome",
+                        "Africa/Luanda",
+                        "Africa/Lubumbashi",
+                        "Africa/Lusaka",
+                        "Africa/Malabo",
+                        "Africa/Maputo",
+                        "Africa/Maseru",
+                        "Africa/Mbabane",
+                        "Africa/Mogadishu",
+                        "Africa/Monrovia",
+                        "Africa/Nairobi",
+                        "Africa/Ndjamena",
+                        "Africa/Niamey",
+                        "Africa/Nouakchott",
+                        "Africa/Ouagadougou",
+                        "Africa/Porto-Novo",
+                        "Africa/Sao_Tome",
+                        "Africa/Timbuktu",
+                        "Africa/Tripoli",
+                        "Africa/Tunis",
+                        "Africa/Windhoek",
+                        "America/Adak",
+                        "America/Anchorage",
+                        "America/Anguilla",
+                        "America/Antigua",
+                        "America/Araguaina",
+                        "America/Argentina/Buenos_Aires",
+                        "America/Argentina/Catamarca",
+                        "America/Argentina/ComodRivadavia",
+                        "America/Argentina/Cordoba",
+                        "America/Argentina/Jujuy",
+                        "America/Argentina/La_Rioja",
+                        "America/Argentina/Mendoza",
+                        "America/Argentina/Rio_Gallegos",
+                        "America/Argentina/Salta",
+                        "America/Argentina/San_Juan",
+                        "America/Argentina/San_Luis",
+                        "America/Argentina/Tucuman",
+                        "America/Argentina/Ushuaia",
+                        "America/Aruba",
+                        "America/Asuncion",
+                        "America/Atikokan",
+                        "America/Atka",
+                        "America/Bahia",
+                        "America/Bahia_Banderas",
+                        "America/Barbados",
+                        "America/Belem",
+                        "America/Belize",
+                        "America/Blanc-Sablon",
+                        "America/Boa_Vista",
+                        "America/Bogota",
+                        "America/Boise",
+                        "America/Buenos_Aires",
+                        "America/Cambridge_Bay",
+                        "America/Campo_Grande",
+                        "America/Cancun",
+                        "America/Caracas",
+                        "America/Catamarca",
+                        "America/Cayenne",
+                        "America/Cayman",
+                        "America/Chicago",
+                        "America/Chihuahua",
+                        "America/Coral_Harbour",
+                        "America/Cordoba",
+                        "America/Costa_Rica",
+                        "America/Creston",
+                        "America/Cuiaba",
+                        "America/Curacao",
+                        "America/Danmarkshavn",
+                        "America/Dawson",
+                        "America/Dawson_Creek",
+                        "America/Denver",
+                        "America/Detroit",
+                        "America/Dominica",
+                        "America/Edmonton",
+                        "America/Eirunepe",
+                        "America/El_Salvador",
+                        "America/Ensenada",
+                        "America/Fort_Nelson",
+                        "America/Fort_Wayne",
+                        "America/Fortaleza",
+                        "America/Glace_Bay",
+                        "America/Godthab",
+                        "America/Goose_Bay",
+                        "America/Grand_Turk",
+                        "America/Grenada",
+                        "America/Guadeloupe",
+                        "America/Guatemala",
+                        "America/Guayaquil",
+                        "America/Guyana",
+                        "America/Halifax",
+                        "America/Havana",
+                        "America/Hermosillo",
+                        "America/Indiana/Indianapolis",
+                        "America/Indiana/Knox",
+                        "America/Indiana/Marengo",
+                        "America/Indiana/Petersburg",
+                        "America/Indiana/Tell_City",
+                        "America/Indiana/Vevay",
+                        "America/Indiana/Vincennes",
+                        "America/Indiana/Winamac",
+                        "America/Indianapolis",
+                        "America/Inuvik",
+                        "America/Iqaluit",
+                        "America/Jamaica",
+                        "America/Jujuy",
+                        "America/Juneau",
+                        "America/Kentucky/Louisville",
+                        "America/Kentucky/Monticello",
+                        "America/Knox_IN",
+                        "America/Kralendijk",
+                        "America/La_Paz",
+                        "America/Lima",
+                        "America/Los_Angeles",
+                        "America/Louisville",
+                        "America/Lower_Princes",
+                        "America/Maceio",
+                        "America/Managua",
+                        "America/Manaus",
+                        "America/Marigot",
+                        "America/Martinique",
+                        "America/Matamoros",
+                        "America/Mazatlan",
+                        "America/Mendoza",
+                        "America/Menominee",
+                        "America/Merida",
+                        "America/Metlakatla",
+                        "America/Mexico_City",
+                        "America/Miquelon",
+                        "America/Moncton",
+                        "America/Monterrey",
+                        "America/Montevideo",
+                        "America/Montreal",
+                        "America/Montserrat",
+                        "America/Nassau",
+                        "America/New_York",
+                        "America/Nipigon",
+                        "America/Nome",
+                        "America/Noronha",
+                        "America/North_Dakota/Beulah",
+                        "America/North_Dakota/Center",
+                        "America/North_Dakota/New_Salem",
+                        "America/Ojinaga",
+                        "America/Panama",
+                        "America/Pangnirtung",
+                        "America/Paramaribo",
+                        "America/Phoenix",
+                        "America/Port-au-Prince",
+                        "America/Port_of_Spain",
+                        "America/Porto_Acre",
+                        "America/Porto_Velho",
+                        "America/Puerto_Rico",
+                        "America/Punta_Arenas",
+                        "America/Rainy_River",
+                        "America/Rankin_Inlet",
+                        "America/Recife",
+                        "America/Regina",
+                        "America/Resolute",
+                        "America/Rio_Branco",
+                        "America/Rosario",
+                        "America/Santa_Isabel",
+                        "America/Santarem",
+                        "America/Santiago",
+                        "America/Santo_Domingo",
+                        "America/Sao_Paulo",
+                        "America/Scoresbysund",
+                        "America/Shiprock",
+                        "America/Sitka",
+                        "America/St_Barthelemy",
+                        "America/St_Johns",
+                        "America/St_Kitts",
+                        "America/St_Lucia",
+                        "America/St_Thomas",
+                        "America/St_Vincent",
+                        "America/Swift_Current",
+                        "America/Tegucigalpa",
+                        "America/Thule",
+                        "America/Thunder_Bay",
+                        "America/Tijuana",
+                        "America/Toronto",
+                        "America/Tortola",
+                        "America/Vancouver",
+                        "America/Virgin",
+                        "America/Whitehorse",
+                        "America/Winnipeg",
+                        "America/Yakutat",
+                        "America/Yellowknife",
+                        "Antarctica/Casey",
+                        "Antarctica/Davis",
+                        "Antarctica/DumontDUrville",
+                        "Antarctica/Macquarie",
+                        "Antarctica/Mawson",
+                        "Antarctica/McMurdo",
+                        "Antarctica/Palmer",
+                        "Antarctica/Rothera",
+                        "Antarctica/South_Pole",
+                        "Antarctica/Syowa",
+                        "Antarctica/Troll",
+                        "Antarctica/Vostok",
+                        "Arctic/Longyearbyen",
+                        "Asia/Aden",
+                        "Asia/Almaty",
+                        "Asia/Amman",
+                        "Asia/Anadyr",
+                        "Asia/Aqtau",
+                        "Asia/Aqtobe",
+                        "Asia/Ashgabat",
+                        "Asia/Ashkhabad",
+                        "Asia/Atyrau",
+                        "Asia/Baghdad",
+                        "Asia/Bahrain",
+                        "Asia/Baku",
+                        "Asia/Bangkok",
+                        "Asia/Barnaul",
+                        "Asia/Beirut",
+                        "Asia/Bishkek",
+                        "Asia/Brunei",
+                        "Asia/Calcutta",
+                        "Asia/Chita",
+                        "Asia/Choibalsan",
+                        "Asia/Chongqing",
+                        "Asia/Chungking",
+                        "Asia/Colombo",
+                        "Asia/Dacca",
+                        "Asia/Damascus",
+                        "Asia/Dhaka",
+                        "Asia/Dili",
+                        "Asia/Dubai",
+                        "Asia/Dushanbe",
+                        "Asia/Famagusta",
+                        "Asia/Gaza",
+                        "Asia/Harbin",
+                        "Asia/Hebron",
+                        "Asia/Ho_Chi_Minh",
+                        "Asia/Hong_Kong",
+                        "Asia/Hovd",
+                        "Asia/Irkutsk",
+                        "Asia/Istanbul",
+                        "Asia/Jakarta",
+                        "Asia/Jayapura",
+                        "Asia/Jerusalem",
+                        "Asia/Kabul",
+                        "Asia/Kamchatka",
+                        "Asia/Karachi",
+                        "Asia/Kashgar",
+                        "Asia/Kathmandu",
+                        "Asia/Katmandu",
+                        "Asia/Khandyga",
+                        "Asia/Kolkata",
+                        "Asia/Krasnoyarsk",
+                        "Asia/Kuala_Lumpur",
+                        "Asia/Kuching",
+                        "Asia/Kuwait",
+                        "Asia/Macao",
+                        "Asia/Macau",
+                        "Asia/Magadan",
+                        "Asia/Makassar",
+                        "Asia/Manila",
+                        "Asia/Muscat",
+                        "Asia/Nicosia",
+                        "Asia/Novokuznetsk",
+                        "Asia/Novosibirsk",
+                        "Asia/Omsk",
+                        "Asia/Oral",
+                        "Asia/Phnom_Penh",
+                        "Asia/Pontianak",
+                        "Asia/Pyongyang",
+                        "Asia/Qatar",
+                        "Asia/Qostanay",
+                        "Asia/Qyzylorda",
+                        "Asia/Rangoon",
+                        "Asia/Riyadh",
+                        "Asia/Saigon",
+                        "Asia/Sakhalin",
+                        "Asia/Samarkand",
+                        "Asia/Seoul",
+                        "Asia/Shanghai",
+                        "Asia/Singapore",
+                        "Asia/Srednekolymsk",
+                        "Asia/Taipei",
+                        "Asia/Tashkent",
+                        "Asia/Tbilisi",
+                        "Asia/Tehran",
+                        "Asia/Tel_Aviv",
+                        "Asia/Thimbu",
+                        "Asia/Thimphu",
+                        "Asia/Tokyo",
+                        "Asia/Tomsk",
+                        "Asia/Ujung_Pandang",
+                        "Asia/Ulaanbaatar",
+                        "Asia/Ulan_Bator",
+                        "Asia/Urumqi",
+                        "Asia/Ust-Nera",
+                        "Asia/Vientiane",
+                        "Asia/Vladivostok",
+                        "Asia/Yakutsk",
+                        "Asia/Yangon",
+                        "Asia/Yekaterinburg",
+                        "Asia/Yerevan",
+                        "Atlantic/Azores",
+                        "Atlantic/Bermuda",
+                        "Atlantic/Canary",
+                        "Atlantic/Cape_Verde",
+                        "Atlantic/Faeroe",
+                        "Atlantic/Faroe",
+                        "Atlantic/Jan_Mayen",
+                        "Atlantic/Madeira",
+                        "Atlantic/Reykjavik",
+                        "Atlantic/South_Georgia",
+                        "Atlantic/St_Helena",
+                        "Atlantic/Stanley",
+                        "Australia/ACT",
+                        "Australia/Adelaide",
+                        "Australia/Brisbane",
+                        "Australia/Broken_Hill",
+                        "Australia/Canberra",
+                        "Australia/Currie",
+                        "Australia/Darwin",
+                        "Australia/Eucla",
+                        "Australia/Hobart",
+                        "Australia/LHI",
+                        "Australia/Lindeman",
+                        "Australia/Lord_Howe",
+                        "Australia/Melbourne",
+                        "Australia/NSW",
+                        "Australia/North",
+                        "Australia/Perth",
+                        "Australia/Queensland",
+                        "Australia/South",
+                        "Australia/Sydney",
+                        "Australia/Tasmania",
+                        "Australia/Victoria",
+                        "Australia/West",
+                        "Australia/Yancowinna",
+                        "Brazil/Acre",
+                        "Brazil/DeNoronha",
+                        "Brazil/East",
+                        "Brazil/West",
+                        "CET",
+                        "CST6CDT",
+                        "Canada/Atlantic",
+                        "Canada/Central",
+                        "Canada/Eastern",
+                        "Canada/Mountain",
+                        "Canada/Newfoundland",
+                        "Canada/Pacific",
+                        "Canada/Saskatchewan",
+                        "Canada/Yukon",
+                        "Chile/Continental",
+                        "Chile/EasterIsland",
+                        "Cuba",
+                        "EET",
+                        "EST5EDT",
+                        "Egypt",
+                        "Eire",
+                        "Etc/GMT",
+                        "Etc/GMT+0",
+                        "Etc/GMT+1",
+                        "Etc/GMT+10",
+                        "Etc/GMT+11",
+                        "Etc/GMT+12",
+                        "Etc/GMT+2",
+                        "Etc/GMT+3",
+                        "Etc/GMT+4",
+                        "Etc/GMT+5",
+                        "Etc/GMT+6",
+                        "Etc/GMT+7",
+                        "Etc/GMT+8",
+                        "Etc/GMT+9",
+                        "Etc/GMT-0",
+                        "Etc/GMT-1",
+                        "Etc/GMT-10",
+                        "Etc/GMT-11",
+                        "Etc/GMT-12",
+                        "Etc/GMT-13",
+                        "Etc/GMT-14",
+                        "Etc/GMT-2",
+                        "Etc/GMT-3",
+                        "Etc/GMT-4",
+                        "Etc/GMT-5",
+                        "Etc/GMT-6",
+                        "Etc/GMT-7",
+                        "Etc/GMT-8",
+                        "Etc/GMT-9",
+                        "Etc/GMT0",
+                        "Etc/Greenwich",
+                        "Etc/UCT",
+                        "Etc/UTC",
+                        "Etc/Universal",
+                        "Etc/Zulu",
+                        "Europe/Amsterdam",
+                        "Europe/Andorra",
+                        "Europe/Astrakhan",
+                        "Europe/Athens",
+                        "Europe/Belfast",
+                        "Europe/Belgrade",
+                        "Europe/Berlin",
+                        "Europe/Bratislava",
+                        "Europe/Brussels",
+                        "Europe/Bucharest",
+                        "Europe/Budapest",
+                        "Europe/Busingen",
+                        "Europe/Chisinau",
+                        "Europe/Copenhagen",
+                        "Europe/Dublin",
+                        "Europe/Gibraltar",
+                        "Europe/Guernsey",
+                        "Europe/Helsinki",
+                        "Europe/Isle_of_Man",
+                        "Europe/Istanbul",
+                        "Europe/Jersey",
+                        "Europe/Kaliningrad",
+                        "Europe/Kiev",
+                        "Europe/Kirov",
+                        "Europe/Kyiv",
+                        "Europe/Lisbon",
+                        "Europe/Ljubljana",
+                        "Europe/London",
+                        "Europe/Luxembourg",
+                        "Europe/Madrid",
+                        "Europe/Malta",
+                        "Europe/Mariehamn",
+                        "Europe/Minsk",
+                        "Europe/Monaco",
+                        "Europe/Moscow",
+                        "Europe/Nicosia",
+                        "Europe/Oslo",
+                        "Europe/Paris",
+                        "Europe/Podgorica",
+                        "Europe/Prague",
+                        "Europe/Riga",
+                        "Europe/Rome",
+                        "Europe/Samara",
+                        "Europe/San_Marino",
+                        "Europe/Sarajevo",
+                        "Europe/Saratov",
+                        "Europe/Simferopol",
+                        "Europe/Skopje",
+                        "Europe/Sofia",
+                        "Europe/Stockholm",
+                        "Europe/Tallinn",
+                        "Europe/Tirane",
+                        "Europe/Tiraspol",
+                        "Europe/Ulyanovsk",
+                        "Europe/Uzhgorod",
+                        "Europe/Vaduz",
+                        "Europe/Vatican",
+                        "Europe/Vienna",
+                        "Europe/Vilnius",
+                        "Europe/Volgograd",
+                        "Europe/Warsaw",
+                        "Europe/Zagreb",
+                        "Europe/Zaporozhye",
+                        "Europe/Zurich",
+                        "GB",
+                        "GB-Eire",
+                        "GMT",
+                        "GMT+0",
+                        "GMT-0",
+                        "GMT0",
+                        "Greenwich",
+                        "Hongkong",
+                        "Iceland",
+                        "Indian/Antananarivo",
+                        "Indian/Chagos",
+                        "Indian/Christmas",
+                        "Indian/Cocos",
+                        "Indian/Comoro",
+                        "Indian/Kerguelen",
+                        "Indian/Mahe",
+                        "Indian/Maldives",
+                        "Indian/Mauritius",
+                        "Indian/Mayotte",
+                        "Indian/Reunion",
+                        "Iran",
+                        "Israel",
+                        "Jamaica",
+                        "Japan",
+                        "Kwajalein",
+                        "Libya",
+                        "MET",
+                        "MST7MDT",
+                        "Mexico/BajaNorte",
+                        "Mexico/BajaSur",
+                        "Mexico/General",
+                        "NZ",
+                        "NZ-CHAT",
+                        "Navajo",
+                        "PRC",
+                        "PST8PDT",
+                        "Pacific/Apia",
+                        "Pacific/Auckland",
+                        "Pacific/Bougainville",
+                        "Pacific/Chatham",
+                        "Pacific/Chuuk",
+                        "Pacific/Easter",
+                        "Pacific/Efate",
+                        "Pacific/Enderbury",
+                        "Pacific/Fakaofo",
+                        "Pacific/Fiji",
+                        "Pacific/Funafuti",
+                        "Pacific/Galapagos",
+                        "Pacific/Gambier",
+                        "Pacific/Guadalcanal",
+                        "Pacific/Guam",
+                        "Pacific/Honolulu",
+                        "Pacific/Johnston",
+                        "Pacific/Kanton",
+                        "Pacific/Kiritimati",
+                        "Pacific/Kosrae",
+                        "Pacific/Kwajalein",
+                        "Pacific/Majuro",
+                        "Pacific/Marquesas",
+                        "Pacific/Midway",
+                        "Pacific/Nauru",
+                        "Pacific/Niue",
+                        "Pacific/Norfolk",
+                        "Pacific/Noumea",
+                        "Pacific/Pago_Pago",
+                        "Pacific/Palau",
+                        "Pacific/Pitcairn",
+                        "Pacific/Pohnpei",
+                        "Pacific/Ponape",
+                        "Pacific/Port_Moresby",
+                        "Pacific/Rarotonga",
+                        "Pacific/Saipan",
+                        "Pacific/Samoa",
+                        "Pacific/Tahiti",
+                        "Pacific/Tarawa",
+                        "Pacific/Tongatapu",
+                        "Pacific/Truk",
+                        "Pacific/Wake",
+                        "Pacific/Wallis",
+                        "Pacific/Yap",
+                        "Poland",
+                        "Portugal",
+                        "ROK",
+                        "Singapore",
+                        "Turkey",
+                        "UCT",
+                        "US/Alaska",
+                        "US/Aleutian",
+                        "US/Arizona",
+                        "US/Central",
+                        "US/East-Indiana",
+                        "US/Eastern",
+                        "US/Hawaii",
+                        "US/Indiana-Starke",
+                        "US/Michigan",
+                        "US/Mountain",
+                        "US/Pacific",
+                        "US/Samoa",
+                        "UTC",
+                        "Universal",
+                        "W-SU",
+                        "WET",
+                        "Zulu"
+                    ],
+                    "requiresPageReload": true
+                },
+                "dateFormat:scaled": {
+                    "name": "Scaled date format",
+                    "type": "json",
+                    "value": "[\n  [\"\", \"HH:mm:ss.SSS\"],\n  [\"PT1S\", \"HH:mm:ss\"],\n  [\"PT1M\", \"HH:mm\"],\n  [\"PT1H\", \"YYYY-MM-DD HH:mm\"],\n  [\"P1DT\", \"YYYY-MM-DD\"],\n  [\"P1YT\", \"YYYY\"]\n]",
+                    "description": "Values that define the format used in situations where time-based data is rendered in order, and formatted timestamps should adapt to the interval between measurements. Keys are <a href=\"http://en.wikipedia.org/wiki/ISO_8601#Time_intervals\" target=\"_blank\" rel=\"noopener noreferrer\">ISO8601 intervals</a>."
+                },
+                "dateFormat:dow": {
+                    "name": "Day of week",
+                    "value": "Sunday",
+                    "description": "What day should weeks start on?",
+                    "type": "select",
+                    "options": [
+                        "Sunday",
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday"
+                    ]
+                },
+                "dateNanosFormat": {
+                    "name": "Date with nanoseconds format",
+                    "value": "MMM D, YYYY @ HH:mm:ss.SSSSSSSSS",
+                    "description": "Used for the <a href=\"https://opensearch.org/docs/latest/opensearch/units/\" target=\"_blank\" rel=\"noopener noreferrer\">date_nanos</a> datatype of OpenSearch"
+                },
+                "truncate:maxHeight": {
+                    "name": "Maximum table cell height",
+                    "value": 115,
+                    "description": "The maximum height that a cell in a table should occupy. Set to 0 to disable truncation"
+                },
+                "buildNum": {
+                    "readonly": true
+                },
+                "defaultRoute": {
+                    "name": "Default route",
+                    "value": "/app/home",
+                    "description": "This setting specifies the default route when opening OpenSearch Dashboards, You can use this setting to modify the landing page when opening OpenSearch Dashboards, The route must be a relative URL."
+                },
+                "pageNavigation": {
+                    "name": "Side nav style",
+                    "value": "modern",
+                    "description": "Change the style of navigation",
+                    "type": "select",
+                    "options": [
+                        "modern",
+                        "legacy"
+                    ],
+                    "optionLabels": {
+                        "modern": "Modern",
+                        "legacy": "Legacy"
+                    },
+                    "category": [
+                        "appearance"
+                    ]
+                },
+                "notifications:banner": {
+                    "name": "Custom banner notification",
+                    "value": "",
+                    "type": "markdown",
+                    "description": "A custom banner intended for temporary notices to all users. <a href=\"https://help.github.com/articles/basic-writing-and-formatting-syntax/\"\n            target=\"_blank\" rel=\"noopener noreferrer\">Markdown supported</a>.",
+                    "category": [
+                        "notifications"
+                    ]
+                },
+                "notifications:lifetime:banner": {
+                    "name": "Banner notification lifetime",
+                    "value": 3000000,
+                    "description": "The time in milliseconds which a banner notification will be displayed on-screen for. Setting to Infinity will disable the countdown.",
+                    "type": "number",
+                    "category": [
+                        "notifications"
+                    ]
+                },
+                "notifications:lifetime:error": {
+                    "name": "Error notification lifetime",
+                    "value": 300000,
+                    "description": "The time in milliseconds which an error notification will be displayed on-screen for. Setting to Infinity will disable.",
+                    "type": "number",
+                    "category": [
+                        "notifications"
+                    ]
+                },
+                "notifications:lifetime:warning": {
+                    "name": "Warning notification lifetime",
+                    "value": 10000,
+                    "description": "The time in milliseconds which a warning notification will be displayed on-screen for. Setting to Infinity will disable.",
+                    "type": "number",
+                    "category": [
+                        "notifications"
+                    ]
+                },
+                "notifications:lifetime:info": {
+                    "name": "Info notification lifetime",
+                    "value": 5000,
+                    "description": "The time in milliseconds which an information notification will be displayed on-screen for. Setting to Infinity will disable.",
+                    "type": "number",
+                    "category": [
+                        "notifications"
+                    ]
+                },
+                "theme:darkMode": {
+                    "name": "Dark mode",
+                    "value": false,
+                    "description": "Enable a dark mode for the OpenSearch Dashboards UI. A page refresh is required for the setting to be applied.",
+                    "requiresPageReload": true,
+                    "category": [
+                        "appearance"
+                    ]
+                },
+                "theme:version": {
+                    "name": "Theme version",
+                    "value": "Next (preview)",
+                    "type": "select",
+                    "options": [
+                        "v7",
+                        "Next (preview)"
+                    ],
+                    "description": "<p>Switch between the themes used for the current and next versions of OpenSearch Dashboards. A page refresh is required for the setting to be applied.</p><p><a href=\"https://forum.opensearch.org/t/feedback-on-dark-mode-experience/15725\">Theme feedback</a></p>",
+                    "requiresPageReload": true,
+                    "category": [
+                        "appearance"
+                    ]
+                },
+                "state:storeInSessionStorage": {
+                    "name": "Store URLs in session storage",
+                    "value": false,
+                    "description": "The URL can sometimes grow to be too large for some browsers to handle. To counter-act this we are testing if storing parts of the URL in session storage could help. Please let us know how it goes!"
+                },
+                "visualization:tileMap:maxPrecision": {
+                    "name": "Maximum tile map precision",
+                    "value": 7,
+                    "description": "The maximum geoHash precision displayed on tile maps: 7 is high, 10 is very high, 12 is the max. <a href=\"https://opensearch.org/docs/latest/aggregations/bucket/geohash-grid/\"\n            target=\"_blank\" rel=\"noopener noreferrer\">Explanation of cell dimensions</a>",
+                    "category": [
+                        "visualization"
+                    ]
+                },
+                "visualization:tileMap:WMSdefaults": {
+                    "name": "Default WMS properties",
+                    "value": "{\n  \"enabled\": false,\n  \"url\": \"\",\n  \"options\": {\n    \"version\": \"\",\n    \"layers\": \"\",\n    \"format\": \"image/png\",\n    \"transparent\": true,\n    \"attribution\": \"\",\n    \"styles\": \"\"\n  }\n}",
+                    "type": "json",
+                    "description": "Default <a href=\"http://leafletjs.com/reference.html#tilelayer-wms\" target=\"_blank\" rel=\"noopener noreferrer\">properties</a> for the WMS map server support in the coordinate map",
+                    "category": [
+                        "visualization"
+                    ]
+                },
+                "csv:separator": {
+                    "name": "CSV separator",
+                    "value": ",",
+                    "description": "Separate exported values with this string"
+                },
+                "csv:quoteValues": {
+                    "name": "Quote CSV values",
+                    "value": true,
+                    "description": "Should values be quoted in csv exports?"
+                },
+                "metaFields": {
+                    "name": "Meta fields",
+                    "value": [
+                        "_source",
+                        "_id",
+                        "_type",
+                        "_index",
+                        "_score"
+                    ],
+                    "description": "Fields that exist outside of _source to merge into our document when displaying it"
+                },
+                "doc_table:highlight": {
+                    "name": "Highlight results",
+                    "value": true,
+                    "description": "Highlight results in Discover and Saved Searches Dashboard. Highlighting makes requests slow when working on big documents.",
+                    "category": [
+                        "discover"
+                    ]
+                },
+                "query:queryString:options": {
+                    "name": "Query string options",
+                    "value": "{ \"analyze_wildcard\": true }",
+                    "description": "<a href=\"https://opensearch.org/docs/latest/opensearch/query-dsl/index/\" target=\"_blank\" rel=\"noopener noreferrer\">Options</a> for the lucene query string parser. Is only used when \"Query language\" is set to Lucene.",
+                    "type": "json"
+                },
+                "query:allowLeadingWildcards": {
+                    "name": "Allow leading wildcards in query",
+                    "value": true,
+                    "description": "When set, * is allowed as the first character in a query clause. Currently only applies when experimental query features are enabled in the query bar. To disallow leading wildcards in basic lucene queries, use query:queryString:options."
+                },
+                "search:queryLanguage": {
+                    "name": "Query language",
+                    "value": "kuery",
+                    "description": "Query language used by the query bar. DQL is a new language built specifically for OpenSearch Dashboards.",
+                    "type": "select",
+                    "options": [
+                        "lucene",
+                        "kuery"
+                    ],
+                    "optionLabels": {
+                        "lucene": "Lucene",
+                        "kuery": "DQL"
+                    }
+                },
+                "sort:options": {
+                    "name": "Sort options",
+                    "value": "{ \"unmapped_type\": \"boolean\" }",
+                    "description": "<a href=\"https://opensearch.org/docs/latest/opensearch/ux/#sort-results\" target=\"_blank\" rel=\"noopener noreferrer\">Options</a> for the OpenSearch sort parameter",
+                    "type": "json"
+                },
+                "defaultIndex": {
+                    "name": "Default index",
+                    "value": null,
+                    "type": "string",
+                    "description": "The index to access if no index is set"
+                },
+                "courier:ignoreFilterIfFieldNotInIndex": {
+                    "name": "Ignore filter(s)",
+                    "value": false,
+                    "description": "This configuration enhances support for dashboards containing visualizations accessing dissimilar indexes. When disabled, all filters are applied to all visualizations. When enabled, filter(s) will be ignored for a visualization when the visualization's index does not contain the filtering field.",
+                    "category": [
+                        "search"
+                    ]
+                },
+                "courier:setRequestPreference": {
+                    "name": "Request preference",
+                    "value": "sessionId",
+                    "options": [
+                        "sessionId",
+                        "custom",
+                        "none"
+                    ],
+                    "optionLabels": {
+                        "sessionId": "Session ID",
+                        "custom": "Custom",
+                        "none": "None"
+                    },
+                    "type": "select",
+                    "description": "Allows you to set which shards handle your search requests.\n          <ul>\n            <li><strong>Session ID:</strong> restricts operations to execute all search requests on the same shards.\n              This has the benefit of reusing shard caches across requests.</li>\n            <li><strong>Custom:</strong> allows you to define a your own preference.\n              Use <strong>'courier:customRequestPreference'</strong> to customize your preference value.</li>\n            <li><strong>None:</strong> means do not set a preference.\n              This might provide better performance because requests can be spread across all shard copies.\n              However, results might be inconsistent because different shards might be in different refresh states.</li>\n          </ul>",
+                    "category": [
+                        "search"
+                    ]
+                },
+                "courier:customRequestPreference": {
+                    "name": "Custom request preference",
+                    "value": "_local",
+                    "type": "string",
+                    "description": "<a href=\"https://opensearch.org/docs/latest/opensearch/popular-api\" target=\"_blank\" rel=\"noopener noreferrer\">Request Preference</a> used when <strong>courier:setRequestPreference</strong> is set to \"custom\".",
+                    "category": [
+                        "search"
+                    ]
+                },
+                "courier:maxConcurrentShardRequests": {
+                    "name": "Max Concurrent Shard Requests",
+                    "value": 0,
+                    "type": "number",
+                    "description": "Controls the <a href=\"https://opensearch.org/docs/latest/opensearch/query-dsl/full-text/#multi-match\"\n            target=\"_blank\" rel=\"noopener noreferrer\" >max_concurrent_shard_requests</a> setting used for _msearch requests sent by OpenSearch Dashboards. Set to 0 to disable this config and use the OpenSearch default.",
+                    "category": [
+                        "search"
+                    ]
+                },
+                "courier:batchSearches": {
+                    "name": "Batch concurrent searches",
+                    "value": false,
+                    "type": "boolean",
+                    "description": "When disabled, dashboard panels will load individually, and search requests will terminate when users navigate\n           away or update the query. When enabled, dashboard panels will load together when all of the data is loaded, and\n           searches will not terminate.",
+                    "category": [
+                        "search"
+                    ]
+                },
+                "search:includeFrozen": {
+                    "name": "Search in frozen indices",
+                    "description": "Will include <a href=\"https://opensearch.org/docs/latest/opensearch/index-data\"\n        target=\"_blank\" rel=\"noopener noreferrer\">frozen indices</a> in results if enabled. Searching through frozen indices\n        might increase the search time.",
+                    "value": false,
+                    "category": [
+                        "search"
+                    ]
+                },
+                "histogram:barTarget": {
+                    "name": "Target bars",
+                    "value": 50,
+                    "description": "Attempt to generate around this many bars when using \"auto\" interval in date histograms"
+                },
+                "histogram:maxBars": {
+                    "name": "Maximum bars",
+                    "value": 100,
+                    "description": "Never show more than this many bars in date histograms, scale values if needed"
+                },
+                "history:limit": {
+                    "name": "History limit",
+                    "value": 10,
+                    "description": "In fields that have history (e.g. query inputs), show this many recent values"
+                },
+                "shortDots:enable": {
+                    "name": "Shorten fields",
+                    "value": false,
+                    "description": "Shorten long fields, for example, instead of foo.bar.baz, show f.b.baz"
+                },
+                "format:defaultTypeMap": {
+                    "name": "Field type format name",
+                    "value": "{\n  \"ip\": { \"id\": \"ip\", \"params\": {} },\n  \"date\": { \"id\": \"date\", \"params\": {} },\n  \"date_nanos\": { \"id\": \"date_nanos\", \"params\": {}, \"opensearch\": true },\n  \"number\": { \"id\": \"number\", \"params\": {} },\n  \"boolean\": { \"id\": \"boolean\", \"params\": {} },\n  \"_source\": { \"id\": \"_source\", \"params\": {} },\n  \"_default_\": { \"id\": \"string\", \"params\": {} }\n}",
+                    "type": "json",
+                    "description": "Map of the format name to use by default for each field type. \"_default_\" is used if the field type is not mentioned explicitly"
+                },
+                "format:number:defaultPattern": {
+                    "name": "Number format",
+                    "value": "0,0.[000]",
+                    "type": "string",
+                    "description": "Default <a href=\"http://numeraljs.com/\" target=\"_blank\" rel=\"noopener noreferrer\">numeral format</a> for the \"number\" format"
+                },
+                "format:percent:defaultPattern": {
+                    "name": "Percent format",
+                    "value": "0,0.[000]%",
+                    "type": "string",
+                    "description": "Default <a href=\"http://numeraljs.com/\" target=\"_blank\" rel=\"noopener noreferrer\">numeral format</a> for the \"percent\" format"
+                },
+                "format:bytes:defaultPattern": {
+                    "name": "Bytes format",
+                    "value": "0,0.[0]b",
+                    "type": "string",
+                    "description": "Default <a href=\"http://numeraljs.com/\" target=\"_blank\" rel=\"noopener noreferrer\">numeral format</a> for the \"bytes\" format"
+                },
+                "format:currency:defaultPattern": {
+                    "name": "Currency format",
+                    "value": "($0,0.[00])",
+                    "type": "string",
+                    "description": "Default <a href=\"http://numeraljs.com/\" target=\"_blank\" rel=\"noopener noreferrer\">numeral format</a> for the \"currency\" format"
+                },
+                "format:number:defaultLocale": {
+                    "name": "Formatting locale",
+                    "value": "en",
+                    "type": "select",
+                    "options": [
+                        "en",
+                        "be-nl",
+                        "chs",
+                        "cs",
+                        "da-dk",
+                        "de-ch",
+                        "de",
+                        "en-gb",
+                        "es-ES",
+                        "es",
+                        "et",
+                        "fi",
+                        "fr-CA",
+                        "fr-ch",
+                        "fr",
+                        "hu",
+                        "it",
+                        "ja",
+                        "nl-nl",
+                        "pl",
+                        "pt-br",
+                        "pt-pt",
+                        "ru-UA",
+                        "ru",
+                        "sk",
+                        "th",
+                        "tr",
+                        "uk-UA"
+                    ],
+                    "optionLabels": {
+                        "be-nl": "Dutch (Belgium)",
+                        "chs": "Simplified Chinese",
+                        "cs": "Czech",
+                        "da-dk": "Danish (Denmark)",
+                        "de-ch": "German (Switzerland)",
+                        "de": "German",
+                        "en-gb": "English (UK)",
+                        "es-ES": "Spanish (Spain)",
+                        "es": "Spanish",
+                        "et": "Estonian",
+                        "fi": "Finnish",
+                        "fr-CA": "French (Canada)",
+                        "fr-ch": "French (Switzerland)",
+                        "fr": "French",
+                        "hu": "Hungarian",
+                        "it": "Italian",
+                        "ja": "Japanese",
+                        "nl-nl": "Dutch (Netherlands)",
+                        "pl": "Polish",
+                        "pt-br": "Portuguese (Brazil)",
+                        "pt-pt": "Portuguese",
+                        "ru-UA": "Russian (Ukraine)",
+                        "ru": "Russian",
+                        "sk": "Slovak",
+                        "th": "Thai",
+                        "tr": "Turkish",
+                        "uk-UA": "Ukrainian"
+                    },
+                    "description": "<a href=\"http://numeraljs.com/\" target=\"_blank\" rel=\"noopener noreferrer\">Numeral language</a> locale"
+                },
+                "timepicker:refreshIntervalDefaults": {
+                    "name": "Time filter refresh interval",
+                    "value": "{\n  \"pause\": false,\n  \"value\": 0\n}",
+                    "type": "json",
+                    "description": "The timefilter's default refresh interval. The \"value\" needs to be specified in milliseconds.",
+                    "requiresPageReload": true
+                },
+                "timepicker:timeDefaults": {
+                    "name": "Time filter defaults",
+                    "value": "{\n  \"from\": \"now-15m\",\n  \"to\": \"now\"\n}",
+                    "type": "json",
+                    "description": "The timefilter selection to use when OpenSearch Dashboards is started without one",
+                    "requiresPageReload": true
+                },
+                "timepicker:quickRanges": {
+                    "name": "Time filter quick ranges",
+                    "value": "[\n  {\n    \"from\": \"now/d\",\n    \"to\": \"now/d\",\n    \"display\": \"Today\"\n  },\n  {\n    \"from\": \"now/w\",\n    \"to\": \"now/w\",\n    \"display\": \"This week\"\n  },\n  {\n    \"from\": \"now-15m\",\n    \"to\": \"now\",\n    \"display\": \"Last 15 minutes\"\n  },\n  {\n    \"from\": \"now-30m\",\n    \"to\": \"now\",\n    \"display\": \"Last 30 minutes\"\n  },\n  {\n    \"from\": \"now-1h\",\n    \"to\": \"now\",\n    \"display\": \"Last 1 hour\"\n  },\n  {\n    \"from\": \"now-24h\",\n    \"to\": \"now\",\n    \"display\": \"Last 24 hours\"\n  },\n  {\n    \"from\": \"now-7d\",\n    \"to\": \"now\",\n    \"display\": \"Last 7 days\"\n  },\n  {\n    \"from\": \"now-30d\",\n    \"to\": \"now\",\n    \"display\": \"Last 30 days\"\n  },\n  {\n    \"from\": \"now-90d\",\n    \"to\": \"now\",\n    \"display\": \"Last 90 days\"\n  },\n  {\n    \"from\": \"now-1y\",\n    \"to\": \"now\",\n    \"display\": \"Last 1 year\"\n  }\n]",
+                    "type": "json",
+                    "description": "The list of ranges to show in the Quick section of the time filter. This should be an array of objects, with each object containing \"from\", \"to\" (see <a href=\"https://opensearch.org/docs/latest/opensearch/units\"\n            target=\"_blank\" rel=\"noopener noreferrer\">accepted formats</a>), and \"display\" (the title to be displayed)."
+                },
+                "indexPattern:placeholder": {
+                    "name": "Index pattern placeholder",
+                    "value": "",
+                    "description": "The placeholder for the \"Index pattern name\" field in \"Management > Index Patterns > Create Index Pattern\"."
+                },
+                "filters:pinnedByDefault": {
+                    "name": "Pin filters by default",
+                    "value": false,
+                    "description": "Whether the filters should have a global state (be pinned) by default"
+                },
+                "filterEditor:suggestValues": {
+                    "name": "Filter editor suggest values",
+                    "value": true,
+                    "description": "Set this property to false to prevent the filter editor from suggesting values for fields."
+                },
+                "dataframe:hydrationStrategy": {
+                    "name": "Data frame hydration strategy",
+                    "value": "perSource",
+                    "options": [
+                        "perSource",
+                        "perQuery"
+                    ],
+                    "optionLabels": {
+                        "perSource": "On data source change",
+                        "perQuery": "Per query",
+                        "perResponse": "Per response",
+                        "advanced": "Advanced"
+                    },
+                    "type": "select",
+                    "description": "Allows you to set how often the data frame schema is updated.\n          <ul>\n            <li><strong>On data source change:</strong> hydrates the schema when the data source changes.\n              For example, any time the index pattern is change the data frame schema is hydrated.</li>\n            <li><strong>Per query:</strong> hydrates the schema per query to the data source.\n              Could be expensive, but ensures the schema of the data frame fits the result set.</li>\n            <li><strong>Per response:</strong> hydrates the schema if the data source returns a schema.\n              <strong>Not Implemented</strong>.</li>\n            <li><strong>Advanced:</strong> hydrates the schema in intervals. If the schema hasn't changed the interval increases.\n              If the schema has changed the interval resets. <strong>Not Implemented</strong>.</li>\n          </ul>",
+                    "category": [
+                        "search"
+                    ]
+                },
+                "query:dataSourceReadOnly": {
+                    "name": "Read-only data source in query bar",
+                    "value": true,
+                    "description": "When enabled, the global search bar prevents modifying the data source in the query input. <br><strong>Experimental</strong>: Setting to false enables modifying the data source."
+                },
+                "search:includeAllFields": {
+                    "name": "Include all fields in search request",
+                    "value": false,
+                    "description": "\n        <strong>Experimental</strong>:\n        Adds the <code>\"fields\": [\"*\"]</code> property to search request body",
+                    "category": [
+                        "search"
+                    ]
+                },
+                "savedObjects:perPage": {
+                    "name": "Objects per page",
+                    "value": 20,
+                    "type": "number",
+                    "description": "Number of objects to show per page in the load dialog"
+                },
+                "savedObjects:listingLimit": {
+                    "name": "Objects listing limit",
+                    "type": "number",
+                    "value": 1000,
+                    "description": "Number of objects to fetch for the listing pages"
+                },
+                "home:useNewHomePage": {
+                    "name": "Use New Home Page",
+                    "value": false,
+                    "description": "Try the new home page"
+                },
+                "reporting:useOcr": {
+                    "name": "Reporting use OCR on PDF",
+                    "value": false,
+                    "description": "Whether to run optical character recognition on PDF reports to make text selectable"
+                },
+                "reporting:useFOR": {
+                    "name": "Reporting use ForeignObject rendering",
+                    "value": true,
+                    "description": "Whether to use ForeignObject rendering when generating reports. If it causes issues, try disabling this option."
+                },
+                "visualize:enableLabs": {
+                    "name": "Enable experimental visualizations",
+                    "value": true,
+                    "description": "Allows users to create, view, and edit experimental visualizations. If disabled,\n            only visualizations that are considered production-ready are available to the user.",
+                    "category": [
+                        "visualization"
+                    ]
+                },
+                "visualize:disableBucketAgg": {
+                    "name": "Disable visualizations bucket aggregation types",
+                    "value": [],
+                    "description": "A comma-separated list of bucket aggregations' names. e.g. significant_terms, terms.\n            Deactivates the specified bucket aggregations from visualizations.",
+                    "category": [
+                        "visualization"
+                    ]
+                },
+                "timeline:es.timefield": {
+                    "name": "Time field",
+                    "value": "@timestamp",
+                    "description": "Default field containing a timestamp when using .opensearch()",
+                    "category": [
+                        "timeline"
+                    ]
+                },
+                "timeline:es.default_index": {
+                    "name": "Default index",
+                    "value": "_all",
+                    "description": "Default opensearch index to search with .opensearch()",
+                    "category": [
+                        "timeline"
+                    ]
+                },
+                "timeline:target_buckets": {
+                    "name": "Target buckets",
+                    "value": 200,
+                    "description": "The number of buckets to shoot for when using auto intervals",
+                    "category": [
+                        "timeline"
+                    ]
+                },
+                "timeline:max_buckets": {
+                    "name": "Maximum buckets",
+                    "value": 2000,
+                    "description": "The maximum number of buckets a single datasource can return",
+                    "category": [
+                        "timeline"
+                    ]
+                },
+                "timeline:min_interval": {
+                    "name": "Minimum interval",
+                    "value": "1ms",
+                    "description": "The smallest interval that will be calculated when using \"auto\"",
+                    "category": [
+                        "timeline"
+                    ]
+                },
+                "timeline:graphite.url": {
+                    "name": "Graphite URL",
+                    "value": null,
+                    "description": "<em>[experimental]</em> The URL of your graphite host",
+                    "category": [
+                        "timeline"
+                    ]
+                },
+                "timeline:quandl.key": {
+                    "name": "Quandl key",
+                    "value": "someKeyHere",
+                    "description": "<em>[experimental]</em> Your API key from www.quandl.com",
+                    "category": [
+                        "timeline"
+                    ]
+                },
+                "visualization:enablePluginAugmentation": {
+                    "name": "Enable plugin augmentation",
+                    "value": true,
+                    "description": "Plugin functionality can be accessed from line chart visualizations",
+                    "category": [
+                        "visualization"
+                    ]
+                },
+                "visualization:enablePluginAugmentation.maxPluginObjects": {
+                    "name": "Max number of associated augmentations",
+                    "value": 10,
+                    "description": "Associating more than 10 plugin resources per visualization can lead to performance issues and increase the cost of running clusters.",
+                    "category": [
+                        "visualization"
+                    ]
+                },
+                "visualization:regionmap:showWarnings": {
+                    "name": "Show region map warning",
+                    "value": true,
+                    "description": "Whether the region map shows a warning when terms cannot be joined to a shape on the map.",
+                    "category": [
+                        "visualization"
+                    ]
+                },
+                "visualization:regionmap:customVectorMapMaxSize": {
+                    "name": "Custom vector map size",
+                    "value": 1000,
+                    "description": "The maximum number of features to load from custom vector map. A higher number might have negative impact on browser rendering performance.",
+                    "category": [
+                        "visualization"
+                    ]
+                },
+                "visualization:colorMapping": {
+                    "name": "Color mapping",
+                    "value": "{\"Count\":\"#54B399\"}",
+                    "type": "json",
+                    "description": "Maps values to specified colors within visualizations",
+                    "category": [
+                        "visualization"
+                    ]
+                },
+                "visualization:dimmingOpacity": {
+                    "name": "Dimming opacity",
+                    "value": 0.5,
+                    "type": "number",
+                    "description": "The opacity of the chart items that are dimmed when highlighting another element of the chart. The lower this number, the more the highlighted element will stand out. This must be a number between 0 and 1.",
+                    "category": [
+                        "visualization"
+                    ]
+                },
+                "visualization:heatmap:maxBuckets": {
+                    "name": "Heatmap maximum buckets",
+                    "value": 50,
+                    "type": "number",
+                    "description": "The maximum number of buckets a single datasource can return. A higher number might have negative impact on browser rendering performance",
+                    "category": [
+                        "visualization"
+                    ]
+                },
+                "metrics:max_buckets": {
+                    "name": "Maximum buckets",
+                    "value": 2000,
+                    "description": "The maximum number of buckets a single datasource can return"
+                },
+                "defaultColumns": {
+                    "name": "Default columns",
+                    "value": [
+                        "_source"
+                    ],
+                    "description": "Columns displayed by default in the Discovery tab",
+                    "category": [
+                        "discover"
+                    ]
+                },
+                "discover:sampleSize": {
+                    "name": "Number of rows",
+                    "value": 500,
+                    "description": "The number of rows to show in the table",
+                    "category": [
+                        "discover"
+                    ]
+                },
+                "discover:aggs:terms:size": {
+                    "name": "Number of terms",
+                    "value": 20,
+                    "type": "number",
+                    "description": "Determines how many terms will be visualized when clicking the \"visualize\" button, in the field drop downs, in the discover sidebar.",
+                    "category": [
+                        "discover"
+                    ]
+                },
+                "discover:sort:defaultOrder": {
+                    "name": "Default sort direction",
+                    "value": "desc",
+                    "options": [
+                        "desc",
+                        "asc"
+                    ],
+                    "optionLabels": {
+                        "desc": "Descending",
+                        "asc": "Ascending"
+                    },
+                    "type": "select",
+                    "description": "Controls the default sort direction for time based index patterns in the Discover app.",
+                    "category": [
+                        "discover"
+                    ]
+                },
+                "discover:searchOnPageLoad": {
+                    "name": "Search on page load",
+                    "value": true,
+                    "type": "boolean",
+                    "description": "Controls whether a search is executed when Discover first loads. This setting does not have an effect when loading a saved search.",
+                    "category": [
+                        "discover"
+                    ]
+                },
+                "doc_table:hideTimeColumn": {
+                    "name": "Hide 'Time' column",
+                    "value": false,
+                    "description": "Hide the 'Time' column in Discover and in all Saved Searches on Dashboards.",
+                    "category": [
+                        "discover"
+                    ]
+                },
+                "fields:popularLimit": {
+                    "name": "Popular fields limit",
+                    "value": 10,
+                    "description": "The top N most popular fields to show"
+                },
+                "context:defaultSize": {
+                    "name": "Context size",
+                    "value": 5,
+                    "description": "The number of surrounding entries to show in the context view",
+                    "category": [
+                        "discover"
+                    ]
+                },
+                "context:step": {
+                    "name": "Context size step",
+                    "value": 5,
+                    "description": "The step size to increment or decrement the context size by",
+                    "category": [
+                        "discover"
+                    ]
+                },
+                "context:tieBreakerFields": {
+                    "name": "Tie breaker fields",
+                    "value": [
+                        "_doc"
+                    ],
+                    "description": "A comma-separated list of fields to use for tie-breaking between documents that have the same timestamp value. From this list the first field that is present and sortable in the current index pattern is used.",
+                    "category": [
+                        "discover"
+                    ]
+                },
+                "discover:modifyColumnsOnSwitch": {
+                    "name": "Modify columns when changing index patterns",
+                    "value": true,
+                    "description": "Remove columns that not available in the new index pattern.",
+                    "category": [
+                        "discover"
+                    ]
+                }
+            },
+            "user": {}
+        }
+    },
+    "branding": {
+        "darkMode": false,
+        "assetFolderUrl": "/_dashboards/ui/default_branding",
+        "logo": {},
+        "mark": {},
+        "loadingLogo": {},
+        "applicationTitle": "OpenSearch Dashboards",
+        "useExpandedHeader": true
+    },
+    "survey": "https://survey.opensearch.org"
+}

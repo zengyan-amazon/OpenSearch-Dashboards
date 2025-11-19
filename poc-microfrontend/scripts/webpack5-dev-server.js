@@ -18,7 +18,8 @@ const { REPO_ROOT } = require('@osd/utils');
 const PORT = 5602;
 const BASE_DIR = path.resolve(REPO_ROOT, 'poc-microfrontend');
 const DIST_DIR = path.resolve(BASE_DIR, 'dist');
-const HTML_FILE = path.resolve(BASE_DIR, 'dev-server/src/index.html');
+const HTML_FILE = path.resolve(BASE_DIR, 'dev-server/src/index.html'); // Module testing page
+const OSD_SHELL_FILE = path.resolve(BASE_DIR, 'dev-server/src/osd-shell.html'); // OSD application
 
 // MIME types
 const MIME_TYPES = {
@@ -64,9 +65,15 @@ const server = http.createServer((req, res) => {
   
   console.log(`📨 ${req.method} ${pathname}`);
   
-  // Serve main HTML page
+  // Serve main HTML page (module testing)
   if (pathname === '/' || pathname === '/index.html') {
     serveFile(HTML_FILE, res);
+    return;
+  }
+  
+  // Serve OSD shell application
+  if (pathname === '/app' || pathname === '/osd-shell.html') {
+    serveFile(OSD_SHELL_FILE, res);
     return;
   }
   
@@ -82,6 +89,14 @@ const server = http.createServer((req, res) => {
   if (pathname.startsWith('/core/')) {
     const fileName = pathname.replace('/core/', '');
     const filePath = path.resolve(DIST_DIR, 'core', fileName);
+    serveFile(filePath, res);
+    return;
+  }
+  
+  // Serve translation files from source directory
+  if (pathname.startsWith('/translations/')) {
+    const fileName = pathname.replace('/translations/', '');
+    const filePath = path.resolve(REPO_ROOT, 'src/translations', fileName);
     serveFile(filePath, res);
     return;
   }
@@ -112,7 +127,8 @@ server.listen(PORT, () => {
   console.log(`     - Assets: ${DIST_DIR}`);
   console.log('');
   console.log('📊 Available endpoints:');
-  console.log(`   - http://localhost:${PORT}/                     (Test page)`);
+  console.log(`   - http://localhost:${PORT}/                     (Module testing page)`);
+  console.log(`   - http://localhost:${PORT}/app                  (🚀 OSD Shell Application)`);
   console.log(`   - http://localhost:${PORT}/shared-deps/osd-ui-shared-deps.js    (Main bundle)`);
   console.log(`   - http://localhost:${PORT}/shared-deps/osd-ui-shared-deps.v8.light.css (Theme CSS)`);
   console.log('');

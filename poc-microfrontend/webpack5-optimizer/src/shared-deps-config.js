@@ -41,9 +41,11 @@ exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
     sourceMapFilename: '[file].map',
     devtoolModuleFilenameTemplate: (info) =>
       `osd-ui-shared-deps/${Path.relative(REPO_ROOT, info.absoluteResourcePath)}`,
-    // Use webpack 4 compatible library syntax for now
-    library: '__osdSharedDeps__',
-    libraryTarget: 'var',
+    // Module Federation containers need to be on window object
+    library: {
+      type: 'var',
+      name: '__osdSharedDeps__',
+    },
     publicPath: '/',
     // Remove custom hash function, use webpack default
   },
@@ -57,8 +59,15 @@ exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
         // Single expose for Module Federation (working approach for Option B)
         './SharedBundle': Path.resolve(REPO_ROOT, 'packages/osd-ui-shared-deps/entry.js'),
       },
-      // No shared config - this bundle PROVIDES dependencies but doesn't consume them
-      // Traditional bundling for __osdSharedDeps__ global + MF expose for federated access
+      shared: {
+        // Provide shared dependencies for plugin consumption
+        react: { singleton: true, eager: true },
+        'react-dom': { singleton: true, eager: true },
+        '@elastic/eui': { singleton: true, eager: true },
+        lodash: { singleton: true, eager: true },
+        moment: { singleton: true, eager: true },
+        rxjs: { singleton: true, eager: true },
+      },
     }),
     
     new MiniCssExtractPlugin({

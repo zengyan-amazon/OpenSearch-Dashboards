@@ -227,17 +227,9 @@ exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
 
   optimization: {
     noEmitOnErrors: true,
-    // Restore original splitChunks optimization - this creates the @elastic bundle
-    splitChunks: {
-      cacheGroups: {
-        'osd-ui-shared-deps.@elastic': {
-          name: 'osd-ui-shared-deps.@elastic',
-          test: (m) => m.resource && m.resource.includes('@elastic'),
-          chunks: 'all',
-          enforce: true,
-        },
-      },
-    },
+    // Disable splitChunks for Module Federation - let MF handle chunking automatically
+    // This ensures exposed modules are self-contained and don't depend on external chunks
+    splitChunks: false,
   },
 
   performance: {

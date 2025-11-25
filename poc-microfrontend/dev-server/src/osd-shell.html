@@ -374,9 +374,8 @@
         }
     </script>
     
-    <!-- Load Module Federation entry points with required chunks -->
-    <!-- Load shared deps chunks first (required for container initialization) -->
-    <script src="/shared-deps/osd-ui-shared-deps.@elastic.js"></script>
+    <!-- Load Module Federation entry points -->
+    <!-- Module Federation will automatically handle all dependencies -->
     <script src="/shared-deps/remoteEntry.js"></script>
     <script src="/core/remoteEntry.js"></script>
 </body>

@@ -10,22 +10,39 @@ This directory contains a Proof of Concept (PoC) implementation of Webpack 5 + M
 poc-microfrontend/
 ├── webpack5-optimizer/          # Parallel build system to packages/osd-optimizer
 │   ├── src/
-│   │   └── shared-deps-config.js # Webpack 5 config for shared dependencies
+│   │   ├── shared-deps-config.js        # Webpack 5 config for shared dependencies
+│   │   ├── core-system.js               # Webpack 5 config for core services  
+│   │   └── plugin-opensearchDashboardsLegacy-config.js # Plugin federation config
+│   ├── exposes/                 # Module Federation expose modules
+│   │   ├── all-exposes.js       # Combined expose exports
+│   │   ├── elastic-eui.js       # EUI expose module
+│   │   ├── lodash.js           # Lodash expose module  
+│   │   └── react.js            # React expose module
 │   ├── package.json             # Webpack 5 build dependencies
-│   ├── build-shared.js          # Main shared dependencies build script
+│   ├── build-shared.js          # Shared dependencies build script
+│   ├── build-core.js            # Core services build script
+│   ├── build-opensearchDashboardsLegacy.js # Plugin build script
 │   └── test-build.js            # Direct webpack 5 testing script (alternative)
 ├── dev-server/                  # Micro-frontend development server
 │   └── src/
-│       └── index.html           # Test page with dependency validation
+│       ├── index.html           # Module testing page with dependency validation
+│       └── osd-shell.html       # 🎉 Complete OSD application via Module Federation
 ├── scripts/                     # Development scripts
 │   └── webpack5-dev-server.js   # Development server (port 5602)
-└── dist/                        # Build output directory
-    └── shared-deps/             # Webpack 5 built shared dependencies
-        ├── osd-ui-shared-deps.js        # Main shared bundle (24MB)
-        ├── osd-ui-shared-deps.@elastic.js # @elastic dependencies (17MB)
-        ├── osd-ui-shared-deps.v*.css    # Theme CSS bundles (6 variants)
-        ├── fonts/                       # Monaco editor fonts
-        └── *.js                         # Individual icon modules
+└── dist/                        # Build output directory (created after builds)
+    ├── shared-deps/             # Webpack 5 Module Federation shared dependencies
+    │   ├── remoteEntry.js       # 18MB Module Federation container
+    │   ├── osd-ui-shared-deps.css       # Base theme CSS
+    │   ├── osd-ui-shared-deps.v*.css    # Theme CSS bundles (6 variants)  
+    │   ├── fonts/               # Monaco editor fonts
+    │   └── icon.*.js           # Individual icon modules (400+ files)
+    ├── core/                    # Core services Module Federation container
+    │   ├── remoteEntry.js       # Core services container
+    │   └── *.js                # Core service chunks
+    └── plugins/                 # Plugin containers (when built)
+        └── opensearchDashboardsLegacy/
+            ├── remoteEntry.js   # Plugin Module Federation container
+            └── *.js            # Plugin chunks
 ```
 
 ## How It Works
@@ -69,7 +86,7 @@ build-shared.js loads shared-deps-config.js
   ↓
 Webpack 5 processes packages/osd-ui-shared-deps/entry.js
   ↓
-Outputs: Split bundles (24MB main + 17MB @elastic + themes)
+Outputs: Self-contained Module Federation container (18MB remoteEntry.js + themes + icons)
 ```
 
 ### `yarn build:webpack5:shared:dev`
@@ -77,9 +94,10 @@ Outputs: Split bundles (24MB main + 17MB @elastic + themes)
 **Purpose**: Build OSD shared dependencies using webpack 5 (development mode)
 **Same as production but with source maps and no minification**
 
-**Build Time**: ~46 seconds
-**Output Size**: 24MB main bundle + 17MB @elastic bundle + 6 theme CSS files (~720KB each)
-**Total Size**: 41MB (vs webpack 4: 44MB - **7% smaller!**)
+**Build Time**: ~54 seconds (Pure Module Federation)
+**Output Size**: 18MB self-contained remoteEntry.js + 6 theme CSS files (~720KB each) + 400+ icon modules
+**Total Size**: ~40MB self-contained Module Federation container
+**Architecture**: Pure Module Federation with automatic dependency loading (no manual chunks)
 
 ### `yarn test:webpack5`
 
@@ -111,27 +129,67 @@ Outputs: Split bundles (24MB main + 17MB @elastic + themes)
 - `http://localhost:5602/shared-deps/osd-ui-shared-deps.v8.light.css` - Theme CSS
 - All other built assets available under `/shared-deps/`
 
-### `yarn build:webpack5:shell` (TODO)
+### `yarn build:webpack5:core`
 
-**Purpose**: Build OSD shell application that includes CoreSystem using webpack 5
-**Planned Behavior**:
-1. Build OSD shell application with `src/core/public/` bundled directly into it
-2. Create traditional SPA that contains CoreSystem + bootstrap logic
-3. Provide core services to federated plugins via dependency injection (unchanged)
-4. No separate core container - CoreSystem stays in main application
+**Purpose**: Build OSD core services using webpack 5 + Module Federation (production mode)
+**Location**: Runs from repository root
+**What it does**:
+1. Changes to `poc-microfrontend/webpack5-optimizer` directory
+2. Executes `node build-core.js` with webpack 5 dependencies
+3. Loads webpack 5 configuration from `src/core-system.js`
+4. Builds `src/core/public` services as Module Federation container
+5. Exposes 6 core services: CoreServices, Http, Chrome, Application, SavedObjects, Notifications
+6. Creates self-contained Module Federation container
 
-### `yarn build:webpack5:plugins` (TODO)
+**Command Flow**:
+```bash
+yarn build:webpack5:core
+  ↓
+cd poc-microfrontend/webpack5-optimizer && node build-core.js
+  ↓
+build-core.js loads core-system.js config
+  ↓
+Webpack 5 processes src/core/public with Module Federation
+  ↓
+Outputs: Self-contained core services container (~47KB remoteEntry.js)
+```
 
-**Purpose**: Build OSD plugins using webpack 5 + Module Federation
-**Planned Behavior**:
-1. Build existing plugins from `src/plugins/` with webpack 5
-2. Convert plugins to Module Federation remote modules
-3. Enable runtime plugin loading and communication with shell-provided core services
+### `yarn build:webpack5:core:dev`
+
+**Purpose**: Build OSD core services using webpack 5 (development mode)
+**Same as production but with source maps and no minification**
+
+### `yarn build:webpack5:plugin:opensearchDashboardsLegacy`
+
+**Purpose**: Build opensearchDashboardsLegacy plugin using webpack 5 + Module Federation
+**Location**: Runs from repository root
+**What it does**:
+1. Changes to `poc-microfrontend/webpack5-optimizer` directory
+2. Executes `node build-opensearchDashboardsLegacy.js`
+3. Loads plugin-specific webpack 5 configuration
+4. Builds plugin as Module Federation remote module
+5. Creates self-contained plugin container
+
+**Build Time**: ~1.8 seconds (very fast)
+**Output**: Self-contained plugin Module Federation container
 
 ### `yarn build:webpack5`
 
-**Purpose**: Build all components (shared dependencies + shell + plugins) with webpack 5
-**Current Behavior**: Only builds shared dependencies (shell and plugins TODO)
+**Purpose**: Build all components (shared dependencies + core + plugins) with webpack 5
+**Current Behavior**: Builds shared dependencies and core services containers
+**Available Commands**:
+```bash
+# Build individual components
+yarn build:webpack5:shared         # Shared dependencies container
+yarn build:webpack5:core          # Core services container  
+yarn build:webpack5:plugin:opensearchDashboardsLegacy  # Plugin container
+
+# Clean commands
+yarn clean:webpack5               # Clean all build artifacts
+yarn clean:webpack5:shared        # Clean shared deps only
+yarn clean:webpack5:core          # Clean core only
+yarn clean:webpack5:plugins       # Clean all plugins
+```
 
 ## Development Servers
 
@@ -621,6 +679,97 @@ curl http://localhost:5601/api/status
 # Check dev server logs
 # (Server outputs all requests to console)
 ```
+
+## ⚠️ **CRITICAL: Module Federation Chunk Handling**
+
+### **Issue: splitChunks vs Module Federation Conflict**
+
+**Problem**: Traditional webpack `splitChunks` creates external chunk dependencies that prevent Module Federation containers from working properly.
+
+**Root Cause**: Module Federation expects **self-contained modules**. When `container.get('./Module')` is called, webpack needs all dependencies to be either:
+1. **Bundled within the exposed module** (self-contained)
+2. **Provided via MF shared configuration** (cross-container sharing)
+
+**What Breaks**:
+```javascript
+// ❌ BROKEN: splitChunks creates external dependencies
+optimization: {
+  splitChunks: {
+    cacheGroups: {
+      'vendor': {
+        test: /node_modules/,
+        chunks: 'all'  // Creates separate vendor.js chunk
+      }
+    }
+  }
+}
+// Result: Module Federation container loads but can't resolve external chunks
+```
+
+### **Solution: Pure Module Federation Configuration**
+
+**For Module Federation Containers**:
+```javascript
+// ✅ WORKING: Disable splitChunks for exposed modules
+optimization: {
+  splitChunks: false,  // Let Module Federation handle chunking
+}
+```
+
+**Benefits**:
+- ✅ **Automatic Dependency Loading**: `container.get()` works without manual chunk management
+- ✅ **Self-Contained Modules**: All dependencies bundled within the container
+- ✅ **Industry Standard**: Follows proper Module Federation patterns
+- ✅ **CDN Ready**: No complex chunk coordination required
+
+### **Implementation Guide for All Containers**
+
+**1. Shared Dependencies Container** ✅
+```javascript
+// poc-microfrontend/webpack5-optimizer/src/shared-deps-config.js
+optimization: {
+  splitChunks: false,  // ✅ FIXED: Pure Module Federation
+}
+```
+
+**2. Core Services Container** ✅
+```javascript
+// poc-microfrontend/webpack5-optimizer/src/core-system.js  
+optimization: {
+  splitChunks: false,  // ✅ WORKING: Self-contained core services
+}
+```
+
+**3. Plugin Containers** 🚧
+```javascript
+// Future plugin configurations MUST use:
+optimization: {
+  splitChunks: false,  // ⚠️ REQUIRED for Module Federation
+}
+```
+
+### **Evidence of Success**
+
+**Before Fix (Manual Loading Required)**:
+```html
+<script src="/shared-deps/osd-ui-shared-deps.@elastic.js"></script> <!-- Manual -->
+<script src="/shared-deps/remoteEntry.js"></script>
+```
+
+**After Fix (Automatic Loading)**:
+```html
+<script src="/shared-deps/remoteEntry.js"></script>
+<!-- Module Federation handles everything automatically! -->
+```
+
+**Console Evidence**:
+- ✅ "Container shared_deps ready after 1 attempts" (instant loading)
+- ✅ "Shared dependencies loaded via MF and available as __osdSharedDeps__"
+- ✅ No manual chunk management required
+
+### **Critical Rule for Future Development**
+
+> **⚠️ MANDATORY**: Any webpack configuration that exposes modules via Module Federation MUST set `splitChunks: false` to ensure automatic dependency resolution works properly.
 
 ## Current Development Status
 

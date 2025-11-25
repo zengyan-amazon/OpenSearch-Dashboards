@@ -223,52 +223,136 @@
                     await Promise.all(styleSheetPaths.map(loadStyleSheet));
                     console.log('✅ Theme CSS loaded');
                     
-                    // Step 2: Load Module Federation containers
-                    const sharedContainer = window.shared_deps;
-                    const coreContainer = window.core_services;
+                    // Step 2: Debug available containers and wait for Module Federation containers
+                    console.log('🔍 Debug: Available window variables:', Object.keys(window).filter(key => 
+                        key.includes('shared') || key.includes('core') || key.includes('deps') || key.includes('osd')
+                    ));
                     
-                    if (!sharedContainer || !coreContainer) {
-                        throw new Error('Module Federation containers not found');
+                    function waitForContainer(containerName, maxAttempts = 50) {
+                        return new Promise((resolve, reject) => {
+                            let attempts = 0;
+                            const checkContainer = () => {
+                                attempts++;
+                                if (window[containerName]) {
+                                    console.log(`✅ Container ${containerName} ready after ${attempts} attempts`);
+                                    resolve(window[containerName]);
+                                } else if (attempts >= maxAttempts) {
+                                    console.log(`❌ Container ${containerName} not found. Available containers:`, Object.keys(window).filter(key => 
+                                        key.includes('shared') || key.includes('core') || key.includes('deps')
+                                    ));
+                                    reject(new Error(`Container ${containerName} not available after ${maxAttempts} attempts`));
+                                } else {
+                                    if (attempts % 10 === 0) {
+                                        console.log(`⏳ Still waiting for ${containerName} (attempt ${attempts})`);
+                                    }
+                                    setTimeout(checkContainer, 100); // Check every 100ms
+                                }
+                            };
+                            checkContainer();
+                        });
                     }
                     
-                    // Step 3: Load shared dependencies via Module Federation (Option B)
+                    // Step 3: Load both containers in parallel
+                    const [coreContainer, sharedContainer] = await Promise.all([
+                        waitForContainer('core_services'),
+                        waitForContainer('shared_deps') // MF container, not traditional library
+                    ]);
+                    
+                    // Step 4: Load shared dependencies via Module Federation and create traditional global
                     const sharedBundleModule = await sharedContainer.get('./SharedBundle');
                     const sharedBundle = sharedBundleModule();
                     
-                    // Create traditional global for compatibility
-                    window.__osdSharedDeps__ = {
-                        React: sharedBundle.React,
-                        ReactDom: sharedBundle.ReactDom,
-                        ElasticEui: sharedBundle.ElasticEui,
-                        Lodash: sharedBundle.Lodash,
-                        Moment: sharedBundle.Moment,
-                        Rxjs: sharedBundle.Rxjs,
-                        OsdI18n: sharedBundle.OsdI18n,
-                        OsdMonaco: sharedBundle.OsdMonaco
-                    };
-                    console.log('✅ Shared dependencies loaded via Module Federation');
+                    // Create traditional global for compatibility with existing OSD code
+                    window.__osdSharedDeps__ = sharedBundle;
+                    console.log('✅ Shared dependencies loaded via MF and available as __osdSharedDeps__');
                     
-                    // Step 4: Load core services via Module Federation
+                    // Step 5: Load core services via Module Federation
                     const coreServicesModule = await coreContainer.get('./CoreServices');
                     const coreServices = coreServicesModule();
+                    console.log('✅ Core services loaded via Module Federation');
                     
-                    // Step 5: Setup complete __osdBundles__ global interface (compatibility)
+                    // Step 5: Setup lazy-loading __osdBundles__ interface for Module Federation
+                    const loadedPluginContainers = new Map();
+                    const availablePlugins = ['opensearchDashboardsLegacy']; // Plugin registry
+                    
+                    async function loadPluginContainerOnDemand(pluginName) {
+                        if (loadedPluginContainers.has(pluginName)) {
+                            return loadedPluginContainers.get(pluginName);
+                        }
+                        
+                        try {
+                            console.log(`🔄 Loading plugin container on-demand: ${pluginName}`);
+                            
+                            // Dynamically load the plugin remoteEntry
+                            await new Promise((resolve, reject) => {
+                                const script = document.createElement('script');
+                                script.src = `/plugins/${pluginName}/remoteEntry.js`;
+                                script.onload = resolve;
+                                script.onerror = reject;
+                                document.head.appendChild(script);
+                            });
+                            
+                            // Access the plugin container
+                            const containerName = pluginName + '_plugin';
+                            const container = window[containerName];
+                            if (container) {
+                                loadedPluginContainers.set(pluginName, container);
+                                console.log(`✅ Plugin container loaded on-demand: ${pluginName}`);
+                                return container;
+                            } else {
+                                console.error(`❌ Plugin container not found: ${containerName}`);
+                                return null;
+                            }
+                        } catch (error) {
+                            console.error(`❌ Failed to load plugin ${pluginName}:`, error);
+                            return null;
+                        }
+                    }
+                    
                     window.__osdBundles__ = {
                         get: function(bundleName) {
                             if (bundleName === 'entry/core/public') {
                                 return coreServices; // Return core services from MF
                             }
+                            
+                            // Handle plugin bundles with lazy loading
+                            const pluginMatch = bundleName.match(/^plugin\/(.+)\/public$/);
+                            if (pluginMatch) {
+                                const pluginName = pluginMatch[1];
+                                if (availablePlugins.includes(pluginName)) {
+                                    // Return a promise that resolves to the plugin
+                                    return loadPluginContainerOnDemand(pluginName).then(container => {
+                                        if (container) {
+                                            return container.get('./Plugin').then(module => ({ plugin: module.default || module }));
+                                        }
+                                        return null;
+                                    });
+                                }
+                            }
+                            
                             return null;
                         },
                         has: function(bundleName) {
-                            return bundleName === 'entry/core/public';
+                            if (bundleName === 'entry/core/public') {
+                                return true;
+                            }
+                            
+                            // Check if plugin is available (without loading it)
+                            const pluginMatch = bundleName.match(/^plugin\/(.+)\/public$/);
+                            if (pluginMatch) {
+                                const pluginName = pluginMatch[1];
+                                return availablePlugins.includes(pluginName);
+                            }
+                            
+                            return false;
                         },
                         getIds: function() {
-                            return ['entry/core/public'];
+                            const pluginIds = availablePlugins.map(name => `plugin/${name}/public`);
+                            return ['entry/core/public', ...pluginIds];
                         }
                     };
                     
-                    console.log('✅ Core services loaded via Module Federation');
+                    console.log('✅ Lazy-loading plugin system ready via Module Federation');
                     
                     // Step 6: Call OSD bootstrap (same as traditional)
                     if (coreServices && coreServices.__osdBootstrap__) {
@@ -290,7 +374,9 @@
         }
     </script>
     
-    <!-- Load Module Federation entry points -->
+    <!-- Load Module Federation entry points with required chunks -->
+    <!-- Load shared deps chunks first (required for container initialization) -->
+    <script src="/shared-deps/osd-ui-shared-deps.@elastic.js"></script>
     <script src="/shared-deps/remoteEntry.js"></script>
     <script src="/core/remoteEntry.js"></script>
 </body>

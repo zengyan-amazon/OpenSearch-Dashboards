@@ -6,7 +6,7 @@
  */
 
 const webpack = require('webpack');
-const { getWebpack5CoreConfig } = require('./src/core-config');
+const { getWebpack5CoreConfig } = require('./src/core-system');
 
 // Parse arguments
 const args = process.argv.slice(2);

@@ -72,7 +72,7 @@ module.exports = {
   },
   
   output: {
-    path: path.resolve(__dirname, '../dist/plugins/opensearchDashboardsLegacy'),
+    path: path.resolve(REPO_ROOT, 'poc-microfrontend/dist/plugins/opensearchDashboardsLegacy'),
     publicPath: '/plugins/opensearchDashboardsLegacy/',
     clean: true,
   },

@@ -41,13 +41,9 @@ exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
     sourceMapFilename: '[file].map',
     devtoolModuleFilenameTemplate: (info) =>
       `osd-ui-shared-deps/${Path.relative(REPO_ROOT, info.absoluteResourcePath)}`,
-    // Module Federation containers need to be on window object
-    library: {
-      type: 'var',
-      name: '__osdSharedDeps__',
-    },
     publicPath: '/',
-    // Remove custom hash function, use webpack default
+    // Pure Module Federation - no legacy library output
+    uniqueName: 'shared_deps',
   },
 
   plugins: [
@@ -96,19 +92,18 @@ exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
   module: {
     noParse: [MOMENT_SRC],
     rules: [
-      // Entry.js loader (adapted from existing - removing public path loader for PoC)
-      // TODO: Re-enable public path loader when integrating with OSD server
-      // {
-      //   include: [Path.resolve(REPO_ROOT, 'packages/osd-ui-shared-deps/entry.js')],
-      //   use: [
-      //     {
-      //       loader: UiSharedDeps.publicPathLoader,
-      //       options: {
-      //         key: 'osd-ui-shared-deps',
-      //       },
-      //     },
-      //   ],
-      // },
+      // Entry.js loader (restored for webpack 5 compatibility)
+      {
+        include: [Path.resolve(REPO_ROOT, 'packages/osd-ui-shared-deps/entry.js')],
+        use: [
+          {
+            loader: UiSharedDeps.publicPathLoader,
+            options: {
+              key: 'osd-ui-shared-deps',
+            },
+          },
+        ],
+      },
       
       // CSS handling
       {

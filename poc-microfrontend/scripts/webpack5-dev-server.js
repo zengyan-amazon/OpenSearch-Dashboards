@@ -93,6 +93,14 @@ const server = http.createServer((req, res) => {
     return;
   }
   
+  // Serve plugin containers (opensearchDashboardsLegacy)
+  if (pathname.startsWith('/plugins/opensearchDashboardsLegacy/')) {
+    const fileName = pathname.replace('/plugins/opensearchDashboardsLegacy/', '');
+    const filePath = path.resolve(DIST_DIR, 'plugins/opensearchDashboardsLegacy', fileName);
+    serveFile(filePath, res);
+    return;
+  }
+  
   // Serve translation files from source directory
   if (pathname.startsWith('/translations/')) {
     const fileName = pathname.replace('/translations/', '');
@@ -129,6 +137,7 @@ server.listen(PORT, () => {
   console.log('📊 Available endpoints:');
   console.log(`   - http://localhost:${PORT}/                     (Module testing page)`);
   console.log(`   - http://localhost:${PORT}/app                  (🚀 OSD Shell Application)`);
+  console.log(`   - http://localhost:${PORT}/plugins/opensearchDashboardsLegacy/remoteEntry.js (Plugin container)`);
   console.log(`   - http://localhost:${PORT}/shared-deps/osd-ui-shared-deps.js    (Main bundle)`);
   console.log(`   - http://localhost:${PORT}/shared-deps/osd-ui-shared-deps.v8.light.css (Theme CSS)`);
   console.log('');

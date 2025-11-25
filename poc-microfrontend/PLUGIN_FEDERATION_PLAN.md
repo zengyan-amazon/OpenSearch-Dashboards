@@ -15,10 +15,36 @@ This document outlines the detailed plan to implement Module Federation for the 
 
 ### Current State
 
-- ✅ OSD shell application running via Module Federation
-- ✅ Core services and shared dependencies federated successfully  
+- ✅ OSD shell application running with CoreSystem and bootstrap
+- ✅ Shared dependencies federated via Module Federation (`window.__osdSharedDeps__`)  
 - ✅ Plugin system requesting opensearchDashboardsLegacy plugin
 - ❌ Current Error: `"Definition of plugin 'opensearchDashboardsLegacy' not found"`
+
+### Architecture Overview
+
+**Simplified 2-Container Architecture:**
+```
+┌─────────────────┐    ┌──────────────────┐
+│   OSD Shell     │    │ Plugin Container │
+│ ┌─────────────┐ │    │ ┢━━━━━━━━━━━━━━┪ │
+│ │CoreSystem   │ │◄───┤ │    Plugin    │ │
+│ │Bootstrap    │ │    │ │ (via params) │ │
+│ └─────────────┘ │    │ └──────────────┘ │
+└─────────────────┘    └──────────────────┘
+         ▲
+         │ window.__osdSharedDeps__
+         ▼
+┌─────────────────┐
+│ Shared Deps     │
+│ (React, etc.)   │
+└─────────────────┘
+```
+
+**Key Principles:**
+- **CoreSystem in Shell**: Core services stay in main OSD application (dependency injection)
+- **Shared Dependencies**: Federated via `window.__osdSharedDeps__` (existing OSD pattern)
+- **Plugin Federation**: Plugins loaded as Module Federation remotes
+- **Zero Code Changes**: Plugins receive core services as parameters (unchanged)
 
 ## Implementation Plan
 
@@ -254,9 +280,10 @@ console.log('   - http://localhost:5602/shared-deps/osd-ui-shared-deps.js    (Ma
 2. **Build Integration**:
    ```bash
    # Test full build sequence
-   yarn build:webpack5:shared && yarn build:webpack5:core && yarn build:webpack5:plugin:opensearchDashboardsLegacy
+   yarn build:webpack5:shared && yarn build:webpack5:shell && yarn build:webpack5:plugin:opensearchDashboardsLegacy
    ```
    - Expected: All builds complete successfully
+   - Note: `shell` build includes CoreSystem (`src/core/public`) bundled directly into the OSD application
 
 ---
 
@@ -350,24 +377,21 @@ Add plugin container loading:
 ```html
 <!-- Load Module Federation entry points -->
 <script src="/shared-deps/remoteEntry.js"></script>
-<script src="/core/remoteEntry.js"></script>
+<!-- Note: CoreSystem is bundled directly in the shell application, no separate container needed -->
 <script src="/plugins/opensearchDashboardsLegacy/remoteEntry.js"></script>
 ```
 
 Update bootstrap logic:
 ```javascript
-// Step 6: Load plugin containers (add after core services loading)
+// Step 6: Load plugin containers (CoreSystem already bundled in shell)
 const pluginContainers = {
     opensearchDashboardsLegacy: window.opensearchDashboardsLegacy_plugin
 };
 
 // Step 7: Setup enhanced __osdBundles__ global interface (compatibility)
+// Note: CoreSystem services are directly available in shell, no container needed
 window.__osdBundles__ = {
     get: function(bundleName) {
-        if (bundleName === 'entry/core/public') {
-            return coreServices; // Return core services from MF
-        }
-        
         // Handle plugin bundles
         if (bundleName === 'plugins/opensearchDashboardsLegacy/public') {
             return pluginContainers.opensearchDashboardsLegacy?.get('./Plugin');
@@ -377,14 +401,12 @@ window.__osdBundles__ = {
     },
     has: function(bundleName) {
         const supportedBundles = [
-            'entry/core/public',
             'plugins/opensearchDashboardsLegacy/public'
         ];
         return supportedBundles.includes(bundleName);
     },
     getIds: function() {
         return [
-            'entry/core/public',
             'plugins/opensearchDashboardsLegacy/public'
         ];
     }
@@ -455,9 +477,9 @@ console.log('✅ Plugin containers loaded via Module Federation');
    # Clean previous builds
    rm -rf poc-microfrontend/dist/
    
-   # Full build
+   # Full build sequence (CoreSystem bundled in shell)
    yarn build:webpack5:shared
-   yarn build:webpack5:core  
+   yarn build:webpack5:shell
    yarn build:webpack5:plugin:opensearchDashboardsLegacy
    
    # Start server

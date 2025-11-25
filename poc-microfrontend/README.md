@@ -111,13 +111,14 @@ Outputs: Split bundles (24MB main + 17MB @elastic + themes)
 - `http://localhost:5602/shared-deps/osd-ui-shared-deps.v8.light.css` - Theme CSS
 - All other built assets available under `/shared-deps/`
 
-### `yarn build:webpack5:core` (TODO)
+### `yarn build:webpack5:shell` (TODO)
 
-**Purpose**: Build OSD core application using webpack 5
+**Purpose**: Build OSD shell application that includes CoreSystem using webpack 5
 **Planned Behavior**:
-1. Build `src/core/public/` source code with webpack 5
-2. Generate core bundle with Module Federation remote capability
-3. Enable core services to be loaded as federated module
+1. Build OSD shell application with `src/core/public/` bundled directly into it
+2. Create traditional SPA that contains CoreSystem + bootstrap logic
+3. Provide core services to federated plugins via dependency injection (unchanged)
+4. No separate core container - CoreSystem stays in main application
 
 ### `yarn build:webpack5:plugins` (TODO)
 
@@ -125,12 +126,12 @@ Outputs: Split bundles (24MB main + 17MB @elastic + themes)
 **Planned Behavior**:
 1. Build existing plugins from `src/plugins/` with webpack 5
 2. Convert plugins to Module Federation remote modules
-3. Enable runtime plugin loading and communication
+3. Enable runtime plugin loading and communication with shell-provided core services
 
 ### `yarn build:webpack5`
 
-**Purpose**: Build all components (shared, core, plugins) with webpack 5
-**Current Behavior**: Only builds shared dependencies (others TODO)
+**Purpose**: Build all components (shared dependencies + shell + plugins) with webpack 5
+**Current Behavior**: Only builds shared dependencies (shell and plugins TODO)
 
 ## Development Servers
 
@@ -631,7 +632,7 @@ curl http://localhost:5601/api/status
 3. ✅ **Core Services**: 6/6 services exposed and loading via Module Federation
 4. ✅ **Remote Entries**: Lightweight remoteEntry.js files (18K shared, 47K core)
 
-**Current Architecture**:
+**Simplified Architecture**:
 ```javascript
 // Shared Dependencies (Provider)
 new ModuleFederationPlugin({
@@ -642,26 +643,17 @@ new ModuleFederationPlugin({
   }
 })
 
-// Core Services (Consumer + Provider)  
-new ModuleFederationPlugin({
-  name: 'core_services',
-  filename: 'remoteEntry.js',
-  exposes: {
-    './CoreServices': './src/core/public/index.ts',
-    './Http': './src/core/public/http/index.ts',
-    './Chrome': './src/core/public/chrome/index.ts',
-    // ... all 6 core services
-  },
-  shared: { /* consumes from shared_deps */ }
-})
+// OSD Shell Application (Consumer)
+// CoreSystem bundled directly into shell - no separate container needed
+// Provides core services to plugins via dependency injection (unchanged)
 ```
 
-### ✅ Core Bundle Federation - COMPLETE
+### ✅ OSD Shell Application - SIMPLIFIED APPROACH
 
-**Status**: Core services successfully federated and accessible
-- **Build**: src/core/public built with webpack 5 + Module Federation  
-- **Services**: All 6 core services (CoreServices, Http, Chrome, Application, SavedObjects, Notifications)
-- **Performance**: 47K remoteEntry.js with proper chunk loading
+**Status**: CoreSystem bundled directly into shell application
+- **Architecture**: Traditional SPA containing CoreSystem + bootstrap logic  
+- **Services**: Core services provided via dependency injection to federated plugins
+- **Performance**: No separate core container - reduces complexity and network requests
 
 ### ✅ OSD Application Bootstrap - COMPLETE ✅
 

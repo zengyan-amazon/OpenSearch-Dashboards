@@ -21,10 +21,9 @@ const MOMENT_SRC = require.resolve('moment/min/moment-with-locales.js');
 exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
   mode: dev ? 'development' : 'production',
   
-  // Single entry point for Module Federation (eliminates duplication)
-  entry: {
-    main: Path.resolve(REPO_ROOT, 'packages/osd-ui-shared-deps/entry.js'),
-  },
+  // No entry point needed - Module Federation will handle loading
+  // The exposes section will create the necessary chunks
+  entry: {},
   
   context: Path.resolve(REPO_ROOT, 'packages/osd-ui-shared-deps'),
   devtool: dev ? 'cheap-source-map' : false,
@@ -41,11 +40,50 @@ exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
   },
 
   plugins: [
-    // Module Federation Plugin - Pure dependency provider (no exposes, only shared)
+    // Module Federation Plugin - Exposes all shared dependencies
     new ModuleFederationPlugin({
       name: 'shared_deps',
       filename: 'remoteEntry.js',
-      // REMOVED exposes - this is a pure dependency provider
+      
+      // Expose all shared dependencies for consumption by other containers
+      exposes: {
+        // Core React ecosystem
+        './react': 'react',
+        './react-dom': 'react-dom',
+        './react-dom/server': 'react-dom/server',
+        './react-router': 'react-router',
+        './react-router-dom': 'react-router-dom',
+        './styled-components': 'styled-components',
+        
+        // Elastic ecosystem
+        './@elastic/eui': '@elastic/eui',
+        './@elastic/charts': '@elastic/charts',
+        './@elastic/numeral': '@elastic/numeral',
+        
+        // Utility libraries
+        './lodash': 'lodash',
+        './lodash/fp': 'lodash/fp',
+        './moment': 'moment',
+        './moment-timezone': 'moment-timezone',
+        './rxjs': 'rxjs',
+        './rxjs/operators': 'rxjs/operators',
+        './jquery': 'jquery',
+        
+        // OSD-specific packages
+        './@osd/i18n': '@osd/i18n',
+        './@osd/i18n/react': '@osd/i18n/react',
+        './@osd/monaco': '@osd/monaco',
+        
+        // Runtime dependencies
+        './tslib': 'tslib',
+        
+        // Core JS polyfills
+        './core-js': 'core-js',
+        './regenerator-runtime': 'regenerator-runtime',
+        './whatwg-fetch': 'whatwg-fetch',
+        './symbol-observable': 'symbol-observable',
+      },
+      
       shared: {
         // Core React ecosystem - all 23 OSD shared dependencies  
         'react': { singleton: true, eager: true },
@@ -246,8 +284,62 @@ exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
 
   optimization: {
     noEmitOnErrors: true,
-    // Disable splitChunks for Module Federation - shared modules must be in main bundle for eager sharing
-    splitChunks: false,
+    // Enable splitChunks with 'all' to split both sync and async chunks
+    // This creates separate chunks for each library
+    splitChunks: {
+      chunks: 'all',
+      maxInitialRequests: Infinity,
+      minSize: 0,
+      cacheGroups: {
+        // Create separate chunks for each major library
+        react: {
+          test: /[\\/]node_modules[\\/]react[\\/]/,
+          name: 'vendor-react',
+          priority: 40,
+        },
+        reactDom: {
+          test: /[\\/]node_modules[\\/]react-dom[\\/]/,
+          name: 'vendor-react-dom',
+          priority: 40,
+        },
+        eui: {
+          test: /[\\/]node_modules[\\/]@elastic[\\/]eui[\\/]/,
+          name: 'vendor-eui',
+          priority: 40,
+        },
+        elasticCharts: {
+          test: /[\\/]node_modules[\\/]@elastic[\\/]charts[\\/]/,
+          name: 'vendor-elastic-charts',
+          priority: 40,
+        },
+        lodash: {
+          test: /[\\/]node_modules[\\/]lodash[\\/]/,
+          name: 'vendor-lodash',
+          priority: 40,
+        },
+        moment: {
+          test: /[\\/]node_modules[\\/]moment[\\/]/,
+          name: 'vendor-moment',
+          priority: 40,
+        },
+        rxjs: {
+          test: /[\\/]node_modules[\\/]rxjs[\\/]/,
+          name: 'vendor-rxjs',
+          priority: 40,
+        },
+        monaco: {
+          test: /[\\/]node_modules[\\/]monaco-editor[\\/]/,
+          name: 'vendor-monaco',
+          priority: 40,
+        },
+        defaultVendors: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendor-others',
+          priority: -10,
+          reuseExistingChunk: true,
+        },
+      },
+    },
   },
 
   performance: {

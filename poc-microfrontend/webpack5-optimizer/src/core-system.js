@@ -62,40 +62,41 @@ function getWebpack5CoreConfig({ dev = false } = {}) {
         },
         
         // Consume shared dependencies from shared-deps container
+        // Using import: false to prevent bundling - will load from remote at runtime
         shared: {
           // React ecosystem - consume from shared-deps
-          'react': { singleton: true, requiredVersion: false },
-          'react-dom': { singleton: true, requiredVersion: false },
-          'react-dom/server': { singleton: true, requiredVersion: false },
-          'react-router': { singleton: true, requiredVersion: false },
-          'react-router-dom': { singleton: true, requiredVersion: false },
-          'styled-components': { singleton: true, requiredVersion: false },
+          'react': { singleton: true, requiredVersion: false, import: false },
+          'react-dom': { singleton: true, requiredVersion: false, import: false },
+          'react-dom/server': { singleton: true, requiredVersion: false, import: false },
+          'react-router': { singleton: true, requiredVersion: false, import: false },
+          'react-router-dom': { singleton: true, requiredVersion: false, import: false },
+          'styled-components': { singleton: true, requiredVersion: false, import: false },
           
           // Elastic ecosystem - consume from shared-deps
-          '@elastic/eui': { singleton: true, requiredVersion: false },
-          '@elastic/charts': { singleton: true, requiredVersion: false },
-          '@elastic/numeral': { singleton: true, requiredVersion: false },
+          '@elastic/eui': { singleton: true, requiredVersion: false, import: false },
+          '@elastic/charts': { singleton: true, requiredVersion: false, import: false },
+          '@elastic/numeral': { singleton: true, requiredVersion: false, import: false },
           
           // Utilities - consume from shared-deps
-          'lodash': { singleton: true, requiredVersion: false },
-          'lodash/fp': { singleton: true, requiredVersion: false },
-          'moment': { singleton: true, requiredVersion: false },
-          'moment-timezone': { singleton: true, requiredVersion: false },
-          'rxjs': { singleton: true, requiredVersion: false },
-          'rxjs/operators': { singleton: true, requiredVersion: false },
-          'jquery': { singleton: true, requiredVersion: false },
+          'lodash': { singleton: true, requiredVersion: false, import: false },
+          'lodash/fp': { singleton: true, requiredVersion: false, import: false },
+          'moment': { singleton: true, requiredVersion: false, import: false },
+          'moment-timezone': { singleton: true, requiredVersion: false, import: false },
+          'rxjs': { singleton: true, requiredVersion: false, import: false },
+          'rxjs/operators': { singleton: true, requiredVersion: false, import: false },
+          'jquery': { singleton: true, requiredVersion: false, import: false },
           
           // OSD packages - consume from shared-deps
-          '@osd/i18n': { singleton: true, requiredVersion: false },
-          '@osd/i18n/react': { singleton: true, requiredVersion: false },
-          '@osd/monaco': { singleton: true, requiredVersion: false },
-          'tslib': { singleton: true, requiredVersion: false },
+          '@osd/i18n': { singleton: true, requiredVersion: false, import: false },
+          '@osd/i18n/react': { singleton: true, requiredVersion: false, import: false },
+          '@osd/monaco': { singleton: true, requiredVersion: false, import: false },
+          'tslib': { singleton: true, requiredVersion: false, import: false },
           
           // Polyfills - consume from shared-deps
-          'core-js': { singleton: true, requiredVersion: false },
-          'regenerator-runtime': { singleton: true, requiredVersion: false },
-          'whatwg-fetch': { singleton: true, requiredVersion: false },
-          'symbol-observable': { singleton: true, requiredVersion: false },
+          'core-js': { singleton: true, requiredVersion: false, import: false },
+          'regenerator-runtime': { singleton: true, requiredVersion: false, import: false },
+          'whatwg-fetch': { singleton: true, requiredVersion: false, import: false },
+          'symbol-observable': { singleton: true, requiredVersion: false, import: false },
           
           // Core-specific dependencies (NOT in shared-deps, bundle locally)
           '@osd/std': { singleton: true, requiredVersion: false },

@@ -15,11 +15,12 @@ const path = require('path');
 const url = require('url');
 const { REPO_ROOT } = require('@osd/utils');
 
-const PORT = 5602;
+const PORT = 5605;
 const BASE_DIR = path.resolve(REPO_ROOT, 'poc-microfrontend');
 const DIST_DIR = path.resolve(BASE_DIR, 'dist');
 const HTML_FILE = path.resolve(BASE_DIR, 'dev-server/src/index.html'); // Module testing page
 const OSD_SHELL_FILE = path.resolve(BASE_DIR, 'dev-server/src/osd-shell.html'); // OSD application
+const TEST_MF_FILE = path.resolve(BASE_DIR, 'dev-server/src/test-mf-loading.html'); // MF loading test
 
 // MIME types
 const MIME_TYPES = {
@@ -74,6 +75,12 @@ const server = http.createServer((req, res) => {
   // Serve OSD shell application
   if (pathname === '/app' || pathname === '/osd-shell.html') {
     serveFile(OSD_SHELL_FILE, res);
+    return;
+  }
+  
+  // Serve Module Federation test page
+  if (pathname === '/test-mf-loading.html' || pathname === '/test') {
+    serveFile(TEST_MF_FILE, res);
     return;
   }
   
@@ -136,10 +143,11 @@ server.listen(PORT, () => {
   console.log('');
   console.log('📊 Available endpoints:');
   console.log(`   - http://localhost:${PORT}/                     (Module testing page)`);
+  console.log(`   - http://localhost:${PORT}/test                 (🧪 Module Federation Test)`);
   console.log(`   - http://localhost:${PORT}/app                  (🚀 OSD Shell Application)`);
   console.log(`   - http://localhost:${PORT}/plugins/opensearchDashboardsLegacy/remoteEntry.js (Plugin container)`);
-  console.log(`   - http://localhost:${PORT}/shared-deps/osd-ui-shared-deps.js    (Main bundle)`);
-  console.log(`   - http://localhost:${PORT}/shared-deps/osd-ui-shared-deps.v8.light.css (Theme CSS)`);
+  console.log(`   - http://localhost:${PORT}/shared-deps/remoteEntry.js (Shared deps container)`);
+  console.log(`   - http://localhost:${PORT}/core/remoteEntry.js        (Core services container)`);
   console.log('');
   console.log('🔗 Compare with existing OSD: http://localhost:5601/');
   console.log('');

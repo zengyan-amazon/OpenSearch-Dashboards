@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Module Federation Loading Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            color: #005eb8;
+        }
+        #results {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Module Federation Loading Test</h1>
+    <div id="results">
+        <p>Loading Module Federation containers...</p>
+    </div>
+    
+    <!-- Load all remoteEntry files -->
+    <script src="/shared-deps/remoteEntry.js"></script>
+    <script src="/core/remoteEntry.js"></script>
+    <script src="/plugins/opensearchDashboardsLegacy/remoteEntry.js"></script>
+    
+    <script>
+        async function testModuleFederation() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<h2>Test Results:</h2>';
+            
+            console.log('=== Module Federation Loading Test ===');
+            
+            // Test 1: Containers exist
+            console.log('\n=== Test 1: Container Existence ===');
+            const containers = {
+                'shared_deps': window.shared_deps,
+                'core_services': window.core_services,
+                'opensearchDashboardsLegacy_plugin': window.opensearchDashboardsLegacy_plugin
+            };
+            
+            let allContainersExist = true;
+            for (const [name, container] of Object.entries(containers)) {
+                if (container) {
+                    results.innerHTML += `<p class="success">✅ ${name} container exists</p>`;
+                    console.log(`✅ ${name}:`, container);
+                } else {
+                    results.innerHTML += `<p class="error">❌ ${name} container missing</p>`;
+                    console.error(`❌ ${name} not found`);
+                    allContainersExist = false;
+                }
+            }
+            
+            if (!allContainersExist) {
+                results.innerHTML += '<p class="error">❌ Test failed: Not all containers loaded</p>';
+                return;
+            }
+            
+            // Test 2: Load React from shared deps
+            console.log('\n=== Test 2: Load React from shared_deps ===');
+            try {
+                const reactModule = await window.shared_deps.get('./react');
+                const React = reactModule();
+                results.innerHTML += `<p class="success">✅ React loaded from shared_deps: v${React.version}</p>`;
+                console.log('✅ React:', React);
+                console.log('   Version:', React.version);
+            } catch (error) {
+                results.innerHTML += `<p class="error">❌ React load failed: ${error.message}</p>`;
+                console.error('❌ React error:', error);
+            }
+            
+            // Test 3: Load @elastic/eui from shared deps
+            console.log('\n=== Test 3: Load @elastic/eui from shared_deps ===');
+            try {
+                const euiModule = await window.shared_deps.get('./@elastic/eui');
+                const EUI = euiModule();
+                results.innerHTML += `<p class="success">✅ @elastic/eui loaded from shared_deps</p>`;
+                console.log('✅ @elastic/eui:', EUI);
+                console.log('   EuiButton:', EUI.EuiButton);
+            } catch (error) {
+                results.innerHTML += `<p class="error">❌ @elastic/eui load failed: ${error.message}</p>`;
+                console.error('❌ @elastic/eui error:', error);
+            }
+            
+            // Test 4: Load lodash from shared deps
+            console.log('\n=== Test 4: Load lodash from shared_deps ===');
+            try {
+                const lodashModule = await window.shared_deps.get('./lodash');
+                const _ = lodashModule();
+                results.innerHTML += `<p class="success">✅ lodash loaded from shared_deps: v${_.VERSION}</p>`;
+                console.log('✅ lodash:', _);
+                console.log('   Version:', _.VERSION);
+            } catch (error) {
+                results.innerHTML += `<p class="error">❌ lodash load failed: ${error.message}</p>`;
+                console.error('❌ lodash error:', error);
+            }
+            
+            // Test 5: Load Core Services
+            console.log('\n=== Test 5: Load Core Services ===');
+            try {
+                const coreModule = await window.core_services.get('./CoreServices');
+                const core = coreModule();
+                results.innerHTML += `<p class="success">✅ Core services loaded</p>`;
+                console.log('✅ Core:', core);
+            } catch (error) {
+                results.innerHTML += `<p class="error">❌ Core load failed: ${error.message}</p>`;
+                console.error('❌ Core error:', error);
+            }
+            
+            // Test 6: Load Plugin
+            console.log('\n=== Test 6: Load Plugin ===');
+            try {
+                const pluginModule = await window.opensearchDashboardsLegacy_plugin.get('./Plugin');
+                const plugin = pluginModule();
+                results.innerHTML += `<p class="success">✅ Plugin loaded</p>`;
+                console.log('✅ Plugin:', plugin);
+                console.log('   Plugin factory:', typeof plugin.plugin);
+            } catch (error) {
+                results.innerHTML += `<p class="error">❌ Plugin load failed: ${error.message}</p>`;
+                console.error('❌ Plugin error:', error);
+            }
+            
+            // Test 7: Check shared_deps exposes
+            console.log('\n=== Test 7: Check shared_deps exposes ===');
+            try {
+                // Try to get the list of exposed modules
+                results.innerHTML += '<p class="info">ℹ️ Checking exposed modules from shared_deps...</p>';
+                console.log('shared_deps container:', window.shared_deps);
+                
+                // Test a few key dependencies
+                const testDeps = ['react', 'react-dom', '@elastic/eui', 'lodash', 'moment', 'rxjs'];
+                let exposedCount = 0;
+                for (const dep of testDeps) {
+                    try {
+                        await window.shared_deps.get(`./${dep}`);
+                        exposedCount++;
+                    } catch (e) {
+                        console.warn(`  ⚠️ ${dep} not exposed:`, e.message);
+                    }
+                }
+                results.innerHTML += `<p class="success">✅ ${exposedCount}/${testDeps.length} key dependencies exposed</p>`;
+            } catch (error) {
+                results.innerHTML += `<p class="error">❌ Expose check failed: ${error.message}</p>`;
+            }
+            
+            results.innerHTML += '<hr><p class="info"><strong>Check browser console for detailed logs</strong></p>';
+            console.log('\n=== Test Complete ===');
+        }
+        
+        window.addEventListener('load', () => {
+            // Give containers time to initialize
+            setTimeout(testModuleFederation, 100);
+        });
+    </script>
+</body>
+</html>

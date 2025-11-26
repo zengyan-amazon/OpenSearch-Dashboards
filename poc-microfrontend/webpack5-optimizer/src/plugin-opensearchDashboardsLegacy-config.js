@@ -39,13 +39,27 @@ module.exports = {
         './Plugin': path.join(PLUGIN_ROOT, 'public/index.ts'),
       },
       shared: {
-        // Consume shared dependencies from shared_deps container
-        react: { singleton: true, requiredVersion: false },
+        // Consume from shared-deps container (flexible versioning)
+        'react': { singleton: true, requiredVersion: false },
         'react-dom': { singleton: true, requiredVersion: false },
+        'react-dom/server': { singleton: true, requiredVersion: false },
+        'react-router': { singleton: true, requiredVersion: false },
+        'react-router-dom': { singleton: true, requiredVersion: false },
+        'styled-components': { singleton: true, requiredVersion: false },
         '@elastic/eui': { singleton: true, requiredVersion: false },
-        lodash: { singleton: true, requiredVersion: false },
-        moment: { singleton: true, requiredVersion: false },
-        rxjs: { singleton: true, requiredVersion: false },
+        '@elastic/charts': { singleton: true, requiredVersion: false },
+        '@elastic/numeral': { singleton: true, requiredVersion: false },
+        'lodash': { singleton: true, requiredVersion: false },
+        'lodash/fp': { singleton: true, requiredVersion: false },
+        'moment': { singleton: true, requiredVersion: false },
+        'moment-timezone': { singleton: true, requiredVersion: false },
+        'rxjs': { singleton: true, requiredVersion: false },
+        'rxjs/operators': { singleton: true, requiredVersion: false },
+        'jquery': { singleton: true, requiredVersion: false },
+        '@osd/i18n': { singleton: true, requiredVersion: false },
+        '@osd/i18n/react': { singleton: true, requiredVersion: false },
+        '@osd/monaco': { singleton: true, requiredVersion: false },
+        'tslib': { singleton: true, requiredVersion: false },
       },
     }),
   ],
@@ -57,19 +71,8 @@ module.exports = {
     },
   },
 
-  externals: {
-    // Treat shared dependencies as external - they'll be provided by Module Federation
-    'react': 'react',
-    'react-dom': 'react-dom', 
-    '@elastic/eui': '@elastic/eui',
-    'lodash': 'lodash',
-    'moment': 'moment',
-    'rxjs': 'rxjs',
-    // Intl libraries that come from core OSD (transitive dependencies)
-    'intl-format-cache': 'intl-format-cache',
-    'intl-relativeformat': 'intl-relativeformat',
-    'intl-messageformat': 'intl-messageformat',
-  },
+  // Module Federation shared config replaces externals - automatic dependency resolution
+  // externals: {}, // No longer needed - MF shared handles all import patterns automatically
   
   output: {
     path: path.resolve(REPO_ROOT, 'poc-microfrontend/dist/plugins/opensearchDashboardsLegacy'),

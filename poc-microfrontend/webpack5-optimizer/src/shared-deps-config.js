@@ -21,15 +21,9 @@ const MOMENT_SRC = require.resolve('moment/min/moment-with-locales.js');
 exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
   mode: dev ? 'development' : 'production',
   
-  // Multiple entry points for shared deps and themes
+  // Single entry point for Module Federation (eliminates duplication)
   entry: {
-    'osd-ui-shared-deps': Path.resolve(REPO_ROOT, 'packages/osd-ui-shared-deps/entry.js'),
-    'osd-ui-shared-deps.v7.dark': ['@elastic/eui/dist/eui_theme_dark.css'],
-    'osd-ui-shared-deps.v7.light': ['@elastic/eui/dist/eui_theme_light.css'],
-    'osd-ui-shared-deps.v8.dark': ['@elastic/eui/dist/eui_theme_next_dark.css'],
-    'osd-ui-shared-deps.v8.light': ['@elastic/eui/dist/eui_theme_next_light.css'],
-    'osd-ui-shared-deps.v9.dark': ['@elastic/eui/dist/eui_theme_v9_dark.css'],
-    'osd-ui-shared-deps.v9.light': ['@elastic/eui/dist/eui_theme_v9_light.css'],
+    main: Path.resolve(REPO_ROOT, 'packages/osd-ui-shared-deps/entry.js'),
   },
   
   context: Path.resolve(REPO_ROOT, 'packages/osd-ui-shared-deps'),
@@ -47,22 +41,47 @@ exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
   },
 
   plugins: [
-    // Module Federation Plugin - Dual approach: traditional + federated in different namespaces
+    // Module Federation Plugin - Pure dependency provider (no exposes, only shared)
     new ModuleFederationPlugin({
       name: 'shared_deps',
       filename: 'remoteEntry.js',
-      exposes: {
-        // Single expose for Module Federation (working approach for Option B)
-        './SharedBundle': Path.resolve(REPO_ROOT, 'packages/osd-ui-shared-deps/entry.js'),
-      },
+      // REMOVED exposes - this is a pure dependency provider
       shared: {
-        // Provide shared dependencies for plugin consumption
-        react: { singleton: true, eager: true },
+        // Core React ecosystem - all 23 OSD shared dependencies  
+        'react': { singleton: true, eager: true },
         'react-dom': { singleton: true, eager: true },
+        'react-dom/server': { singleton: true, eager: true },
+        'react-router': { singleton: true, eager: true },
+        'react-router-dom': { singleton: true, eager: true },
+        'styled-components': { singleton: true, eager: true },
+        
+        // Elastic ecosystem
         '@elastic/eui': { singleton: true, eager: true },
-        lodash: { singleton: true, eager: true },
-        moment: { singleton: true, eager: true },
-        rxjs: { singleton: true, eager: true },
+        '@elastic/charts': { singleton: true, eager: true },
+        '@elastic/numeral': { singleton: true, eager: true },
+        
+        // Utility libraries
+        'lodash': { singleton: true, eager: true },
+        'lodash/fp': { singleton: true, eager: true },
+        'moment': { singleton: true, eager: true },
+        'moment-timezone': { singleton: true, eager: true },
+        'rxjs': { singleton: true, eager: true },
+        'rxjs/operators': { singleton: true, eager: true },
+        'jquery': { singleton: true, eager: true },
+        
+        // OSD-specific packages
+        '@osd/i18n': { singleton: true, eager: true },
+        '@osd/i18n/react': { singleton: true, eager: true },
+        '@osd/monaco': { singleton: true, eager: true },
+        
+        // Runtime dependencies
+        'tslib': { singleton: true, eager: true },
+        
+        // Core JS polyfills (ensure they load first)
+        'core-js': { singleton: true, eager: true },
+        'regenerator-runtime': { singleton: true, eager: true },
+        'whatwg-fetch': { singleton: true, eager: true },
+        'symbol-observable': { singleton: true, eager: true },
       },
     }),
     
@@ -227,8 +246,7 @@ exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
 
   optimization: {
     noEmitOnErrors: true,
-    // Disable splitChunks for Module Federation - let MF handle chunking automatically
-    // This ensures exposed modules are self-contained and don't depend on external chunks
+    // Disable splitChunks for Module Federation - shared modules must be in main bundle for eager sharing
     splitChunks: false,
   },
 

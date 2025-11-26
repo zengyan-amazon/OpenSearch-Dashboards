@@ -40,10 +40,16 @@ function getWebpack5CoreConfig({ dev = false } = {}) {
     },
     
     plugins: [
-      // Module Federation Plugin - Expose core services with automatic dependency sharing
+      // Module Federation Plugin - Consumer of shared-deps + service exposer
       new ModuleFederationPlugin({
         name: 'core_services',
         filename: 'remoteEntry.js',
+        
+        // Consume from shared-deps container
+        remotes: {
+          'shared_deps': 'shared_deps@/shared-deps/remoteEntry.js',
+        },
+        
         exposes: {
           // Expose main core bundle
           './CoreServices': Path.resolve(REPO_ROOT, 'src/core/public/index.ts'),
@@ -55,23 +61,48 @@ function getWebpack5CoreConfig({ dev = false } = {}) {
           './Notifications': Path.resolve(REPO_ROOT, 'src/core/public/notifications/index.ts'),
         },
         
-        // Generic shared config - automatically handles all import patterns (lodash/*, rxjs/*, etc.)
+        // Consume shared dependencies from shared-deps container
         shared: {
-          'react': { singleton: true, requiredVersion: '^16.14.0' },
-          'react-dom': { singleton: true, requiredVersion: '^16.12.0' },
-          '@elastic/eui': { singleton: true },
-          'lodash': { singleton: true },
-          'moment': { singleton: true },
-          'rxjs': { singleton: true },
-          '@osd/i18n': { singleton: true },
-          '@osd/monaco': { singleton: true },
-          '@osd/std': { singleton: true },
-          'styled-components': { singleton: true },
-          'classnames': { singleton: true },
-          'react-intl': { singleton: true },
-          'react-use': { singleton: true },
-          // Fix missing json11 dependency
-          'json11': { singleton: true },
+          // React ecosystem - consume from shared-deps
+          'react': { singleton: true, requiredVersion: false },
+          'react-dom': { singleton: true, requiredVersion: false },
+          'react-dom/server': { singleton: true, requiredVersion: false },
+          'react-router': { singleton: true, requiredVersion: false },
+          'react-router-dom': { singleton: true, requiredVersion: false },
+          'styled-components': { singleton: true, requiredVersion: false },
+          
+          // Elastic ecosystem - consume from shared-deps
+          '@elastic/eui': { singleton: true, requiredVersion: false },
+          '@elastic/charts': { singleton: true, requiredVersion: false },
+          '@elastic/numeral': { singleton: true, requiredVersion: false },
+          
+          // Utilities - consume from shared-deps
+          'lodash': { singleton: true, requiredVersion: false },
+          'lodash/fp': { singleton: true, requiredVersion: false },
+          'moment': { singleton: true, requiredVersion: false },
+          'moment-timezone': { singleton: true, requiredVersion: false },
+          'rxjs': { singleton: true, requiredVersion: false },
+          'rxjs/operators': { singleton: true, requiredVersion: false },
+          'jquery': { singleton: true, requiredVersion: false },
+          
+          // OSD packages - consume from shared-deps
+          '@osd/i18n': { singleton: true, requiredVersion: false },
+          '@osd/i18n/react': { singleton: true, requiredVersion: false },
+          '@osd/monaco': { singleton: true, requiredVersion: false },
+          'tslib': { singleton: true, requiredVersion: false },
+          
+          // Polyfills - consume from shared-deps
+          'core-js': { singleton: true, requiredVersion: false },
+          'regenerator-runtime': { singleton: true, requiredVersion: false },
+          'whatwg-fetch': { singleton: true, requiredVersion: false },
+          'symbol-observable': { singleton: true, requiredVersion: false },
+          
+          // Core-specific dependencies (NOT in shared-deps, bundle locally)
+          '@osd/std': { singleton: true, requiredVersion: false },
+          'classnames': { singleton: true, requiredVersion: false },
+          'react-intl': { singleton: true, requiredVersion: false },
+          'react-use': { singleton: true, requiredVersion: false },
+          'json11': { singleton: true, requiredVersion: false },
         }
       }),
       

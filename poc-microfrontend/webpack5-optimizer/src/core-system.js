@@ -15,9 +15,9 @@ function getWebpack5CoreConfig({ dev = false } = {}) {
   return {
     mode: dev ? 'development' : 'production',
     
-    // Core entry point
+    // Bootstrap5 entry point - lightweight Module Federation orchestrator
     entry: {
-      'core': Path.resolve(REPO_ROOT, 'src/core/public/index.ts'),
+      'bootstrap5': Path.resolve(REPO_ROOT, 'src/core/public/osd_bootstrap_5.ts'),
     },
     
     context: Path.resolve(REPO_ROOT, 'src/core'),
@@ -53,6 +53,8 @@ function getWebpack5CoreConfig({ dev = false } = {}) {
         exposes: {
           // Expose main core bundle
           './CoreServices': Path.resolve(REPO_ROOT, 'src/core/public/index.ts'),
+          // Expose bootstrap function for dynamic loading
+          './Bootstrap': Path.resolve(REPO_ROOT, 'src/core/public/osd_bootstrap.ts'),
           // Expose individual services for granular consumption
           './Http': Path.resolve(REPO_ROOT, 'src/core/public/http/index.ts'),
           './Chrome': Path.resolve(REPO_ROOT, 'src/core/public/chrome/index.ts'),
@@ -243,21 +245,9 @@ function getWebpack5CoreConfig({ dev = false } = {}) {
     
     optimization: {
       noEmitOnErrors: true,
-      // Core bundle optimization
-      splitChunks: {
-        chunks: 'all',
-        cacheGroups: {
-          default: false,
-          vendors: false,
-          // Group core services for better loading
-          coreServices: {
-            name: 'core.services',
-            test: /[\\\/]src[\\\/]core[\\\/]public[\\\/](http|chrome|application|saved_objects|notifications)/,
-            chunks: 'all',
-            enforce: true,
-          },
-        },
-      },
+      // ⚠️ CRITICAL: Disable splitChunks for Module Federation
+      // bootstrap5.js must be self-contained and lightweight
+      splitChunks: false,
     },
     
     performance: {

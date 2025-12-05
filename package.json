@@ -69,6 +69,7 @@
     "build:webpack5:core": "cd poc-microfrontend/webpack5-optimizer && node build-core.js",
     "build:webpack5:core:dev": "cd poc-microfrontend/webpack5-optimizer && node build-core.js --dev",
     "build:webpack5:plugin:opensearchDashboardsLegacy": "cd poc-microfrontend/webpack5-optimizer && node build-opensearchDashboardsLegacy.js",
+    "build:webpack5:plugin:opensearchDashboardsLegacy:dev": "cd poc-microfrontend/webpack5-optimizer && node build-opensearchDashboardsLegacy.js --dev",
     "clean:webpack5": "rimraf poc-microfrontend/dist/",
     "clean:webpack5:shared": "rimraf poc-microfrontend/dist/shared-deps/",
     "clean:webpack5:core": "rimraf poc-microfrontend/dist/core/",

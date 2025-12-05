@@ -100,11 +100,11 @@ function getWebpack5CoreConfig({ dev = false } = {}) {
           'symbol-observable': { singleton: true, requiredVersion: false, import: false },
           
           // Core-specific dependencies (NOT in shared-deps, bundle locally)
-          '@osd/std': { singleton: true, requiredVersion: false, import: false },
-          'classnames': { singleton: true, requiredVersion: false, import: false },
-          'react-intl': { singleton: true, requiredVersion: false, import: false },
-          'react-use': { singleton: true, requiredVersion: false, import: false },
-          'json11': { singleton: true, requiredVersion: false, import: false },
+          '@osd/std': { singleton: true, requiredVersion: false },
+          'classnames': { singleton: true, requiredVersion: false },
+          'react-intl': { singleton: true, requiredVersion: false },
+          'react-use': { singleton: true, requiredVersion: false},
+          'json11': { singleton: true, requiredVersion: false},
         }
       }),
       

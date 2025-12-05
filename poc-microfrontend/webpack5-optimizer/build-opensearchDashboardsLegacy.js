@@ -6,11 +6,17 @@
  */
 
 const webpack = require('webpack');
-const config = require('./src/plugin-opensearchDashboardsLegacy-config.js');
+const { getPluginConfig } = require('./src/plugin-opensearchDashboardsLegacy-config.js');
+
+// Parse arguments
+const args = process.argv.slice(2);
+const dev = args.includes('--dev');
 
 console.log('🚀 Building opensearchDashboardsLegacy plugin via Module Federation...');
-console.log('📄 Config loaded, starting webpack...');
+console.log(`   Mode: ${dev ? 'development' : 'production'}`);
+console.log('📄 Config created, starting webpack...');
 
+const config = getPluginConfig({ dev });
 const compiler = webpack(config);
 
 compiler.run((err, stats) => {

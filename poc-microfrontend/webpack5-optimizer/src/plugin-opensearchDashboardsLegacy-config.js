@@ -4,9 +4,11 @@ const { REPO_ROOT } = require('@osd/utils');
 
 const PLUGIN_ROOT = path.resolve(__dirname, '../../../src/plugins/opensearch_dashboards_legacy');
 
-module.exports = {
-  mode: 'development',
+function getPluginConfig({ dev = false } = {}) {
+  return {
+  mode: dev ? 'development' : 'production',
   entry: path.join(PLUGIN_ROOT, 'public/index.ts'),
+  devtool: dev ? 'cheap-source-map' : false,
   
   module: {
     rules: [
@@ -85,8 +87,17 @@ module.exports = {
     hints: false,
   },
   
-  // Basic optimization for development
+  // Development vs Production optimizations
   optimization: {
-    minimize: false,
+    minimize: !dev,
+    ...(dev ? {} : {
+      // Production optimizations
+      splitChunks: {
+        chunks: 'all',
+      },
+    }),
   },
-};
+  };
+}
+
+module.exports = { getPluginConfig };

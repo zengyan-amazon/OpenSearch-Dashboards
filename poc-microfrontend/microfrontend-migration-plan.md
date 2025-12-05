@@ -586,19 +586,21 @@ OpenSearch-Dashboards/
    - [x] **Service Access**: Core services provided to federated plugins via dependency injection (unchanged)
    - [x] **Reduced Complexity**: Eliminates separate core container and associated network requests
 
-### ✅ Phase 1B: Module Federation Implementation - COMPLETED
+### ✅ Phase 1B: Bootstrap5.ts Architecture Implementation - COMPLETED
 
-**Module Federation Success**: Successfully implemented Option B approach with pure Module Federation loading.
+**Revolutionary Success**: Successfully implemented bootstrap5.ts approach with proper Module Federation orchestration.
 
-#### **Module Federation Architecture (2-Container)**
-   - [x] **Shared Dependencies Container**: Pure Module Federation with remoteEntry.js (18K)
-   - [x] **OSD Shell Application**: Traditional SPA with CoreSystem bundled in + bootstrap logic
-   - [x] **Plugin Containers**: Module Federation remotes consuming shared dependencies
+#### **Bootstrap5.ts Architecture Revolution**
+   - [x] **Clean HTML Shell**: Loads only `bootstrap5.js` - no inline scripts (CSP compliant)
+   - [x] **Proper MF Sequence**: `__webpack_init_sharing__` → `container.init()` → app bootstrap  
+   - [x] **Dedicated Bootstrap Entry**: TypeScript orchestration in `src/core/public/osd_bootstrap_5.ts`
+   - [x] **Traditional Compatibility**: Global shims maintained (`window.__osdSharedDeps__`)
 
 #### **Technical Implementation**
-   - [x] **Pure MF Loading**: SharedBundle loaded via Module Federation without traditional scripts
-   - [x] **HTML Bridge**: Traditional global (`window.__osdSharedDeps__`) populated from MF modules
+   - [x] **Centralized Orchestration**: All MF logic in bootstrap5.ts (not HTML)
+   - [x] **Runtime Coordination**: Proper container initialization sequence
    - [x] **Zero Code Changes**: Core and plugins use traditional externals unchanged
+   - [x] **CSP Compliant**: No inline scripts - fully compliant HTML shell
    - [x] **CDN Deployment Ready**: All dependencies deployable via Module Federation
 
 ### ✅ Phase 2A: OSD Application Bootstrap - COMPLETED

@@ -41,11 +41,16 @@ exports.getWebpack5SharedDepsConfig = ({ dev = false } = {}) => ({
   },
 
   plugins: [
-    // Module Federation Plugin - Pure dependency provider (no exposes, only shared)
+    // Module Federation Plugin - Shared dependency provider + exposer
     new ModuleFederationPlugin({
       name: 'shared_deps',
       filename: 'remoteEntry.js',
-      // REMOVED exposes - this is a pure dependency provider
+      
+      // ADD: Expose the shared bundle for consumption by shell and other containers
+      exposes: {
+        './SharedBundle': Path.resolve(REPO_ROOT, 'packages/osd-ui-shared-deps/entry.js'),
+      },
+      
       shared: {
         // Core React ecosystem - all 23 OSD shared dependencies  
         'react': { singleton: true, eager: true },

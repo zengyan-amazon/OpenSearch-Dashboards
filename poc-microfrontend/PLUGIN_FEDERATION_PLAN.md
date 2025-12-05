@@ -369,52 +369,83 @@ console.log('   - http://localhost:5602/shared-deps/osd-ui-shared-deps.js    (Ma
 
 ---
 
-### Step 6: Modify OSD Shell Bootstrap
+### Step 6: Update Bootstrap5.ts for Plugin Federation
 
-**File**: `poc-microfrontend/dev-server/src/osd-shell.html`
+**File**: `src/core/public/osd_bootstrap_5.ts` (NEW - Bootstrap Entry Point)
 
-**Modifications** (update bootstrap script):
+**Modifications** (update bootstrap5.ts orchestration):
 
-Add plugin container loading:
-```html
-<!-- Load Module Federation entry points -->
-<script src="/shared-deps/remoteEntry.js"></script>
-<!-- Note: CoreSystem is bundled directly in the shell application, no separate container needed -->
-<script src="/plugins/opensearchDashboardsLegacy/remoteEntry.js"></script>
+Add plugin container loading to bootstrap sequence:
+```typescript
+// bootstrap5.ts - Updated for plugin federation
+export async function bootstrapApplication() {
+  // Step 1: Load shared-deps remoteEntry.js
+  await loadScript('/shared-deps/remoteEntry.js');
+  
+  // Step 2: Load plugin containers
+  await loadScript('/plugins/opensearchDashboardsLegacy/remoteEntry.js');
+  
+  // Step 3: Initialize Module Federation sharing
+  await __webpack_init_sharing__('default');
+  const shared_deps = window.shared_deps;
+  await shared_deps.init(__webpack_share_scopes__.default);
+  
+  // Step 4: Load and setup shared dependencies
+  const sharedBundleModule = await shared_deps.get('./SharedBundle');
+  const sharedBundle = sharedBundleModule();
+  
+  // Step 5: Create traditional compatibility globals
+  window.__osdSharedDeps__ = sharedBundle;
+  
+  // Step 6: Setup plugin containers for compatibility
+  const pluginContainers = {
+      opensearchDashboardsLegacy: window.opensearchDashboardsLegacy_plugin
+  };
+  
+  // Step 7: Setup __osdBundles__ interface with plugin federation
+  window.__osdBundles__ = {
+      get: function(bundleName) {
+          if (bundleName === 'plugins/opensearchDashboardsLegacy/public') {
+              return pluginContainers.opensearchDashboardsLegacy?.get('./Plugin');
+          }
+          return null;
+      },
+      has: function(bundleName) {
+          return ['plugins/opensearchDashboardsLegacy/public'].includes(bundleName);
+      },
+      getIds: function() {
+          return ['plugins/opensearchDashboardsLegacy/public'];
+      }
+  };
+  
+  console.log('✅ Plugin containers loaded via Module Federation');
+  
+  // Step 8: Import and start OSD application
+  const { __osdBootstrap__ } = await import('./osd_bootstrap');
+  await __osdBootstrap__();
+}
 ```
 
-Update bootstrap logic:
-```javascript
-// Step 6: Load plugin containers (CoreSystem already bundled in shell)
-const pluginContainers = {
-    opensearchDashboardsLegacy: window.opensearchDashboardsLegacy_plugin
-};
-
-// Step 7: Setup enhanced __osdBundles__ global interface (compatibility)
-// Note: CoreSystem services are directly available in shell, no container needed
-window.__osdBundles__ = {
-    get: function(bundleName) {
-        // Handle plugin bundles
-        if (bundleName === 'plugins/opensearchDashboardsLegacy/public') {
-            return pluginContainers.opensearchDashboardsLegacy?.get('./Plugin');
-        }
-        
-        return null;
-    },
-    has: function(bundleName) {
-        const supportedBundles = [
-            'plugins/opensearchDashboardsLegacy/public'
-        ];
-        return supportedBundles.includes(bundleName);
-    },
-    getIds: function() {
-        return [
-            'plugins/opensearchDashboardsLegacy/public'
-        ];
-    }
-};
-
-console.log('✅ Plugin containers loaded via Module Federation');
+**Clean HTML Shell** (updated):
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenSearch Dashboards</title>
+</head>
+<body>
+    <!-- OSD metadata elements -->
+    <osd-csp data='{"strictCsp": false}'></osd-csp>
+    <osd-injected-metadata data='{...}'></osd-injected-metadata>
+    
+    <!-- Revolutionary simplicity: Single script load -->
+    <script>
+        window.__OSD_ASSETS_BASE_URL__ = '';
+        window.__OSD_SHARED_DEPS_URL__ = '/shared-deps/remoteEntry.js';
+    </script>
+    <script src="/core/bootstrap5.js"></script>
+</body>
+</html>
 ```
 
 **Verification Steps**:

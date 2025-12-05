@@ -49,17 +49,26 @@ poc-microfrontend/
 
 ### Build System Architecture
 
-The PoC creates a **parallel build system** that reuses existing OSD source code:
+The PoC creates a **parallel build system** that reuses existing OSD source code with the new **bootstrap5.ts approach**:
 
 1. **Existing System** (unchanged): `packages/osd-optimizer` builds with webpack 4
-2. **New System** (PoC): `poc-microfrontend/webpack5-optimizer` builds same code with webpack 5
+2. **New System** (PoC): `poc-microfrontend/webpack5-optimizer` builds same code with webpack 5 + Module Federation
+3. **Bootstrap5 Pattern**: Dedicated TypeScript bootstrap entry point for proper Module Federation orchestration
 
-### Key Innovation: Code Reuse
+### Key Innovation: Bootstrap5.ts Architecture
 
-Instead of creating separate code, the webpack 5 system **builds existing OSD code**:
-- **Shared Dependencies**: Builds `packages/osd-ui-shared-deps/entry.js` with webpack 5
-- **Themes**: Processes same theme CSS files as existing system
-- **Assets**: Handles Monaco editor and ANTLR grammars from existing packages
+**Revolutionary Change**: Module Federation initialization moved from HTML to dedicated bootstrap entry point:
+- **Clean HTML Shell**: Loads only `bootstrap5.js` - no inline scripts (CSP compliant)
+- **Proper MF Sequence**: `__webpack_init_sharing__` → `container.init()` → app bootstrap
+- **Code Reuse**: Same existing OSD code built with webpack 5 + Module Federation
+- **Runtime Coordination**: Centralized MF orchestration with traditional compatibility
+
+**Build Outputs**:
+```
+/core/bootstrap5.js         ← Main application loader (NEW)
+/core/remoteEntry.js        ← MF container exposing CoreServices  
+/shared-deps/remoteEntry.js ← MF container providing React/EUI/etc.
+```
 
 ## Yarn Commands
 
@@ -603,45 +612,81 @@ function serveFile(filePath, res) {
 - `.html` → `text/html`
 - Fallback → `application/octet-stream`
 
-## Browser Validation
+## Browser Validation & Bootstrap5.ts Architecture
+
+### Bootstrap5.ts Implementation
+
+**File**: `src/core/public/osd_bootstrap_5.ts` (NEW - Bootstrap Entry Point)
+
+**Revolutionary Architecture Pattern**:
+```typescript
+// bootstrap5.ts - Main application loader
+export async function bootstrapApplication() {
+  // Step 1: Load shared-deps remoteEntry.js dynamically
+  await loadScript('/shared-deps/remoteEntry.js');
+  
+  // Step 2: Initialize Module Federation sharing
+  await __webpack_init_sharing__('default');
+  const shared_deps = window.shared_deps;
+  await shared_deps.init(__webpack_share_scopes__.default);
+  
+  // Step 3: Load and setup shared dependencies
+  const sharedBundleModule = await shared_deps.get('./SharedBundle');
+  const sharedBundle = sharedBundleModule();
+  
+  // Step 4: Create traditional compatibility globals
+  window.__osdSharedDeps__ = sharedBundle;
+  window.React = sharedBundle.React;
+  
+  // Step 5: Import and start OSD application
+  const { __osdBootstrap__ } = await import('./osd_bootstrap');
+  await __osdBootstrap__();
+}
+```
+
+### Clean HTML Shell Pattern
+
+**File**: `poc-microfrontend/dev-server/src/osd-shell.html` (UPDATED)
+
+**Simplified Loading Sequence**:
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Standard HTML meta tags -->
+    <title>OpenSearch Dashboards</title>
+</head>
+<body>
+    <!-- OSD metadata elements -->
+    <osd-csp data='{"strictCsp": false}'></osd-csp>
+    <osd-injected-metadata data='{...}'></osd-injected-metadata>
+    
+    <!-- Revolutionary simplicity: Single script load -->
+    <script>
+        window.__OSD_ASSETS_BASE_URL__ = '';
+        window.__OSD_SHARED_DEPS_URL__ = '/shared-deps/remoteEntry.js';
+    </script>
+    <script src="/core/bootstrap5.js"></script>
+</body>
+</html>
+```
 
 ### Test Page Implementation
 
 **File**: `poc-microfrontend/dev-server/src/index.html`
 
-**Loading Sequence**:
-1. **Load Theme CSS**: `osd-ui-shared-deps.v8.light.css` + `osd-ui-shared-deps.css`
-2. **Load Main Bundle**: `osd-ui-shared-deps.js`
-3. **Run Validation**: JavaScript tests for dependency availability
-
-**Validation Logic**:
-```javascript
-function testSharedDeps() {
-  // Check if __osdSharedDeps__ global exists
-  if (typeof __osdSharedDeps__ === 'undefined') {
-    throw new Error('__osdSharedDeps__ global not found');
-  }
-  
-  // Test individual dependencies
-  const tests = [
-    { name: 'React', prop: 'React' },
-    { name: 'ReactDOM', prop: 'ReactDom' },
-    { name: '@elastic/eui', prop: 'ElasticEui' },
-    // ... all shared dependencies
-  ];
-  
-  const results = tests.map(test => ({
-    name: test.name,
-    available: __osdSharedDeps__[test.prop] !== undefined,
-    status: available ? '✅' : '❌'
-  }));
-}
-```
+**Updated Loading Sequence**:
+1. **Load bootstrap5.js**: Single entry point with MF orchestration
+2. **Automatic MF Loading**: `__webpack_init_sharing__` → container loading
+3. **Global Creation**: `window.__osdSharedDeps__` from MF modules
+4. **Validation**: JavaScript tests for dependency availability
 
 **Success Criteria**:
-- ✅ `__osdSharedDeps__` global object created
+- ✅ `bootstrap5.js` loads without errors
+- ✅ Module Federation initialization completes
+- ✅ `__osdSharedDeps__` global created via MF
 - ✅ All 8 critical dependencies available
-- ✅ No JavaScript errors in console
+- ✅ CSP compliant (no inline scripts)
 - ✅ Theme CSS renders correctly
 
 ## Troubleshooting

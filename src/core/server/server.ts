@@ -67,6 +67,7 @@ import { savedObjectsConfig, savedObjectsMigrationConfig } from './saved_objects
 import { config as uiSettingsConfig } from './ui_settings';
 import { config as statusConfig } from './status';
 import { config as dynamicConfigServiceConfig } from './config';
+import { config as mfeConfig } from './mfe';
 import { ContextService } from './context';
 import { RequestHandlerContext } from '.';
 import { InternalCoreSetup, InternalCoreStart, ServiceConfigDescriptor } from './internal_types';
@@ -383,6 +384,7 @@ export class Server {
       statusConfig,
       pidConfig,
       dynamicConfigServiceConfig,
+      mfeConfig,
     ];
 
     this.configService.addDeprecationProvider(rootConfigPath, coreDeprecationProvider);

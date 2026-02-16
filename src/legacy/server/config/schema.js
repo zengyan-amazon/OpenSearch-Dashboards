@@ -263,4 +263,5 @@ export default () =>
     }).default(),
 
     savedObjects: HANDLED_IN_NEW_PLATFORM,
+    mfe: HANDLED_IN_NEW_PLATFORM,
   }).default();

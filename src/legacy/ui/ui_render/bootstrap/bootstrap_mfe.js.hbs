@@ -1,0 +1,338 @@
+{{!--
+  Module Federation Bootstrap Template
+
+  This template enables Module Federation microfrontend loading for OpenSearch Dashboards plugins.
+
+  Requirements:
+  - @module-federation/runtime must be available (either in shared deps or loaded separately)
+  - MFE-enabled plugins must have both remoteEntry.js and fallback .plugin.js bundles
+  - Plugins are loaded in topological order based on dependencies
+
+  Template variables:
+  - mfeRemoteEntries: JSON string array of {id, entry, fallbackUrl, mfeDeps}
+  - jsDependencyPaths: Array of traditional script paths (shared deps + core + non-MFE plugins)
+  - Other standard bootstrap.js.hbs variables
+--}}
+var osdCsp = JSON.parse(document.querySelector('osd-csp').getAttribute('data'));
+window.__osdStrictCsp__ = osdCsp.strictCsp;
+window.__osdPublicPath__ = {{publicPathMap}};
+window.__osdBundles__ = {{osdBundlesLoaderSource}}
+window.__webpack_nonce__ = (function() {
+  var meta = document.querySelector('meta[name="csp-nonce"]');
+  return meta ? meta.getAttribute('content') : '';
+})();
+
+// Set MFE remotes configuration
+window.__osdMfeRemotes__ = JSON.parse('{{{mfeRemoteEntries}}}' || '[]');
+
+// Intercept dynamically created style AND script elements to add CSP nonce
+// This handles third-party libraries (like nano-css from react-use, brace/ace editor)
+// and Module Federation runtime scripts that create script elements dynamically
+(function() {
+  if (!window.__webpack_nonce__) return;
+
+  var nonce = window.__webpack_nonce__;
+
+  // Patch document.createElement
+  var originalCreateElement = document.createElement.bind(document);
+  document.createElement = function(tagName, options) {
+    var element = originalCreateElement(tagName, options);
+    var lowerTag = tagName.toLowerCase();
+    if (lowerTag === 'style' || lowerTag === 'script') {
+      element.setAttribute('nonce', nonce);
+    }
+    return element;
+  };
+
+  // Patch document.createElementNS (used by brace/ace editor)
+  var originalCreateElementNS = document.createElementNS.bind(document);
+  document.createElementNS = function(namespaceURI, qualifiedName) {
+    var element = originalCreateElementNS(namespaceURI, qualifiedName);
+    var lowerTag = qualifiedName.toLowerCase();
+    if (lowerTag === 'style' || lowerTag === 'script') {
+      element.setAttribute('nonce', nonce);
+    }
+    return element;
+  };
+})();
+
+if (window.__osdStrictCsp__ && window.__osdCspNotEnforced__) {
+  var legacyBrowserError = document.getElementById('osd_legacy_browser_error');
+  legacyBrowserError.style.display = 'flex';
+} else {
+  var themeCssDistFilenames = {{THEME_CSS_DIST_FILENAMES}};
+  var kuiCssDistFilenames = {{KUI_CSS_DIST_FILENAMES}};
+
+  var isDarkMode = window.__osdThemeTag__.endsWith('dark');
+  var themeMode = isDarkMode ? 'dark' : 'light';
+  var themeVersion = window.__osdThemeTag__.replace(/(light|dark)$/, '');
+  if (!themeCssDistFilenames[themeVersion]) {
+    themeVersion = 'v8'; // this default should only be needed by tests
+  }
+
+  var loadingMessage = document.getElementById('osd_loading_message');
+  loadingMessage.style.display = 'flex';
+
+  var styleSheetPaths = [
+    '{{regularBundlePath}}/osd-ui-shared-deps/{{UiSharedDeps.baseCssDistFilename}}',
+    '{{regularBundlePath}}/osd-ui-shared-deps/' + themeCssDistFilenames[themeVersion][themeMode],
+    '{{basePath}}/node_modules/@osd/ui-framework/dist/' + kuiCssDistFilenames[themeVersion][themeMode],
+    '{{basePath}}/ui/legacy_' + themeMode + '_theme.css',
+  ];
+
+  window.onload = function () {
+    function failure() {
+      // make subsequent calls to failure() noop
+      failure = function () {};
+
+      var err = document.createElement('h1');
+      err.style['color'] = 'white';
+      err.style['font-family'] = 'monospace';
+      err.style['text-align'] = 'center';
+      err.style['background'] = '#F44336';
+      err.style['padding'] = '25px';
+      err.innerText = document.querySelector('[data-error-message]').dataset.errorMessage;
+
+      document.body.innerHTML = err.outerHTML;
+    }
+
+    var stylesheetTarget = document.querySelector('head meta[name="add-styles-here"]')
+    function loadStyleSheet(url, cb) {
+      var dom = document.createElement('link');
+      dom.rel = 'stylesheet';
+      dom.type = 'text/css';
+      dom.href = url;
+      dom.addEventListener('error', failure);
+      dom.addEventListener('load', cb);
+      document.head.insertBefore(dom, stylesheetTarget);
+    }
+
+    var scriptsTarget = document.querySelector('head meta[name="add-scripts-here"]')
+    function loadScript(url, cb) {
+      var dom = document.createElement('script');
+      {{!-- NOTE: async = false is used to trigger async-download/ordered-execution as outlined here: https://www.html5rocks.com/en/tutorials/speed/script-loading/ --}}
+      dom.async = false;
+      dom.src = url;
+      dom.addEventListener('error', failure);
+      dom.addEventListener('load', cb);
+      document.head.insertBefore(dom, scriptsTarget);
+    }
+
+    function load(urls, cb) {
+      var pending = urls.length;
+      urls.forEach(function (url) {
+        var innerCb = function () {
+          pending = pending - 1;
+          if (pending === 0 && typeof cb === 'function') {
+            cb();
+          }
+        }
+
+        if (typeof url !== 'string') {
+          load(url, innerCb);
+        } else if (url.slice(-4) === '.css') {
+          loadStyleSheet(url, innerCb);
+        } else {
+          loadScript(url, innerCb);
+        }
+      });
+    }
+
+    // Inline MFE initialization and shared deps bridge
+    function initMfeHost() {
+      // Check if Module Federation runtime is available
+      // The runtime could be in shared deps or loaded separately
+      var MFRuntime;
+
+      // First check if it's in shared deps
+      if (window.__osdSharedDeps__ && window.__osdSharedDeps__.ModuleFederationRuntime) {
+        MFRuntime = window.__osdSharedDeps__.ModuleFederationRuntime;
+      }
+      // Otherwise check if it was loaded globally (from @module-federation/runtime)
+      else if (window.__FEDERATION__ && window.__FEDERATION__.runtime) {
+        MFRuntime = window.__FEDERATION__.runtime;
+      }
+      // Check for the global ModuleFederationRuntime export
+      else if (window.ModuleFederationRuntime) {
+        MFRuntime = window.ModuleFederationRuntime;
+      }
+      else {
+        console.error('[MFE] Module Federation runtime not available. Ensure @module-federation/runtime is loaded.');
+        return false;
+      }
+
+      // Map shared dependencies to window.__osdSharedDeps__
+      var sharedDepsMapping = {
+        'react': function() { return window.__osdSharedDeps__.React; },
+        'react-dom': function() { return window.__osdSharedDeps__.ReactDom; },
+        'react-dom/server': function() { return window.__osdSharedDeps__.ReactDomServer; },
+        'react-router': function() { return window.__osdSharedDeps__.ReactRouter; },
+        'react-router-dom': function() { return window.__osdSharedDeps__.ReactRouterDom; },
+        'rxjs': function() { return window.__osdSharedDeps__.Rxjs; },
+        'rxjs/operators': function() { return window.__osdSharedDeps__.RxjsOperators; },
+        '@osd/i18n': function() { return window.__osdSharedDeps__.OsdI18n; },
+        '@osd/i18n/react': function() { return window.__osdSharedDeps__.OsdI18nReact; },
+        '@elastic/eui': function() { return window.__osdSharedDeps__.ElasticEui; },
+        '@elastic/eui/lib/services': function() { return window.__osdSharedDeps__.ElasticEuiLibServices; },
+        '@elastic/eui/lib/services/format': function() { return window.__osdSharedDeps__.ElasticEuiLibServicesFormat; },
+        '@elastic/eui/dist/eui_charts_theme': function() { return window.__osdSharedDeps__.ElasticEuiChartsTheme; },
+        '@elastic/charts': function() { return window.__osdSharedDeps__.ElasticCharts; },
+        '@elastic/numeral': function() { return window.__osdSharedDeps__.ElasticNumeral; },
+        'moment': function() { return window.__osdSharedDeps__.Moment; },
+        'moment-timezone': function() { return window.__osdSharedDeps__.MomentTimezone; },
+        'jquery': function() { return window.__osdSharedDeps__.Jquery; },
+        'lodash': function() { return window.__osdSharedDeps__.Lodash; },
+        'lodash/fp': function() { return window.__osdSharedDeps__.LodashFp; },
+        'styled-components': function() { return window.__osdSharedDeps__.StyledComponents; },
+        '@osd/monaco': function() { return window.__osdSharedDeps__.OsdMonaco; },
+        'monaco-editor/esm/vs/editor/editor.api': function() { return window.__osdSharedDeps__.MonacoBarePluginApi; },
+        'tslib': function() { return window.__osdSharedDeps__.TsLib; },
+        '@osd/ui-shared-deps/theme': function() { return window.__osdSharedDeps__.Theme; },
+        '@elastic/eui/dist/eui_theme_light.json': function() { return window.__osdSharedDeps__.Theme.euiLightVars; },
+        '@elastic/eui/dist/eui_theme_dark.json': function() { return window.__osdSharedDeps__.Theme.euiDarkVars; },
+        'numeral': function() { return window.__osdSharedDeps__.ElasticNumeral; }
+      };
+
+      // Build shared configuration for MF runtime
+      // MF expects get() to return a factory function: get: () => () => module
+      var shared = {};
+      for (var dep in sharedDepsMapping) {
+        shared[dep] = {
+          version: '0',
+          get: (function(getter) {
+            return function() { return function() { return getter(); }; };
+          })(sharedDepsMapping[dep]),
+          loaded: true,
+          eager: true,
+          singleton: true
+        };
+      }
+
+      // Initialize Module Federation runtime
+      MFRuntime.init({
+        name: 'osd_host',
+        remotes: window.__osdMfeRemotes__.map(function(remote) {
+          return {
+            name: remote.id,
+            entry: remote.entry
+          };
+        }),
+        shared: shared
+      });
+
+      return true; // Successfully initialized
+    }
+
+    // Sequential MFE remote loading with fallback
+    function loadMfeRemotes(remotes, onComplete) {
+      if (!remotes || remotes.length === 0) {
+        onComplete();
+        return;
+      }
+
+      // Get the MF runtime (could be from different sources)
+      var MFRuntime;
+      if (window.__osdSharedDeps__ && window.__osdSharedDeps__.ModuleFederationRuntime) {
+        MFRuntime = window.__osdSharedDeps__.ModuleFederationRuntime;
+      } else if (window.__FEDERATION__ && window.__FEDERATION__.runtime) {
+        MFRuntime = window.__FEDERATION__.runtime;
+      } else if (window.ModuleFederationRuntime) {
+        MFRuntime = window.ModuleFederationRuntime;
+      }
+
+      if (!MFRuntime) {
+        console.error('[MFE] Module Federation runtime not available, falling back to traditional loading');
+        // Fall back to loading all plugins traditionally
+        remotes.forEach(function(remote) {
+          if (remote.fallbackUrl) {
+            loadScript(remote.fallbackUrl, function() {});
+          }
+        });
+        onComplete();
+        return;
+      }
+      var index = 0;
+
+      function loadNext() {
+        if (index >= remotes.length) {
+          onComplete();
+          return;
+        }
+
+        var remote = remotes[index++];
+        console.log('[MFE] Loading remote: ' + remote.id);
+
+        // Use Module Federation runtime to load the remote
+        MFRuntime.loadRemote(remote.id + '/plugin')
+          .then(function(module) {
+            console.log('[MFE] ✓ Loaded ' + remote.id + ' via Module Federation');
+
+            // Register the loaded module on __osdBundles__
+            var bundleKey = 'plugin/' + remote.id + '/public';
+            if (module && module.plugin) {
+              window.__osdBundles__.define(bundleKey, function() { return module; });
+            }
+
+            // Load next remote
+            loadNext();
+          })
+          .catch(function(error) {
+            console.error('[MFE] ✗ Failed ' + remote.id + ', falling back', error);
+
+            // Fallback to traditional bundle loading
+            if (remote.fallbackUrl) {
+              loadScript(remote.fallbackUrl, function() {
+                console.log('[MFE] Loaded ' + remote.id + ' via fallback');
+                loadNext();
+              });
+            } else {
+              loadNext();
+            }
+          });
+      }
+
+      loadNext();
+    }
+
+    // Load traditional scripts first (shared deps + core + non-MFE plugins)
+    load([
+      {{#each jsDependencyPaths}}
+        '{{this}}',
+      {{/each}}
+    ], function () {
+      // After traditional scripts are loaded, handle MFE if enabled
+      var mfeRemotes = window.__osdMfeRemotes__;
+
+      if (mfeRemotes && mfeRemotes.length > 0) {
+        // Initialize MFE host
+        var mfeInitialized = initMfeHost();
+
+        if (mfeInitialized) {
+          // Load MFE remotes sequentially
+          loadMfeRemotes(mfeRemotes, function() {
+            // All remotes loaded (or failed with fallback), bootstrap the app
+            __osdBundles__.get('entry/core/public').__osdBootstrap__();
+            load(styleSheetPaths);
+          });
+        } else {
+          // MFE init failed, fall back to traditional loading
+          console.warn('[MFE] Failed to initialize MFE host, falling back to traditional loading');
+
+          // Load all MFE plugins as traditional bundles
+          var fallbackPaths = mfeRemotes.map(function(remote) {
+            return remote.fallbackUrl;
+          }).filter(Boolean);
+
+          load(fallbackPaths, function() {
+            __osdBundles__.get('entry/core/public').__osdBootstrap__();
+            load(styleSheetPaths);
+          });
+        }
+      } else {
+        // No MFE remotes, bootstrap immediately
+        __osdBundles__.get('entry/core/public').__osdBootstrap__();
+        load(styleSheetPaths);
+      }
+    });
+  }
+}

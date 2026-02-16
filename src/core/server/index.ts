@@ -58,6 +58,7 @@ import {
   OpenSearchServiceStart,
   IScopedClusterClient,
 } from './opensearch';
+import { config as mfeConfig } from './mfe';
 import { HttpServiceSetup, HttpServiceStart, OpenSearchDashboardsRequest } from './http';
 import { HttpResources } from './http_resources';
 
@@ -569,4 +570,5 @@ export const config = {
   logging: {
     appenders: appendersSchema as Type<AppenderConfigType>,
   },
+  mfe: mfeConfig,
 };

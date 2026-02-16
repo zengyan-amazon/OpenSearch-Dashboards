@@ -65,3 +65,6 @@ export const LodashFp = require('lodash/fp');
 
 // runtime deps which don't need to be copied across all bundles
 export const TsLib = require('tslib');
+
+// Module Federation runtime for MFE support
+export const ModuleFederationRuntime = require('@module-federation/runtime');

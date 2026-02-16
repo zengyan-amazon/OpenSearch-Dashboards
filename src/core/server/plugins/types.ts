@@ -212,6 +212,11 @@ export interface PluginManifest {
    * when adding OpenSearch cluster as data sources.
    */
   readonly requiredOSDataSourcePlugins?: readonly PluginName[];
+
+  /**
+   * Specifies whether this plugin is enabled for Module Federation microfrontend loading.
+   */
+  readonly mfe?: boolean;
 }
 
 /**
@@ -279,6 +284,10 @@ export interface InternalPluginInfo {
    * Path to the plugin assets directory.
    */
   readonly publicAssetsDir: string;
+  /**
+   * Whether this plugin is MFE-enabled (has Module Federation remote entry).
+   */
+  readonly mfe?: boolean;
 }
 
 /**

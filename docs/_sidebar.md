@@ -6,6 +6,8 @@
     - [Current_usage](charts/current_usage.md)
   - Docker dev
     - [Docker dev setup manual](docker-dev/docker-dev-setup-manual.md)
+  - MFE (Module Federation)
+    - [MFE Overview](mfe/README.md)
   - Multi datasource
     - [Client_management_design](multi-datasource/client_management_design.md)
     - [High_level_design](multi-datasource/high_level_design.md)

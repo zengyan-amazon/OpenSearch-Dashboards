@@ -34,6 +34,7 @@ if (process.noProcessWarnings !== true) {
     'NodeDeprecationWarning',
     'MODULE_TYPELESS_PACKAGE_JSON',
     'fs.Stats constructor is deprecated.',
+    'DeprecationWarning',
   ];
 
   process.on('warning', function (warn) {

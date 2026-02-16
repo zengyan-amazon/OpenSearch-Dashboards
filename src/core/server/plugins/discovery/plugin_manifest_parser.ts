@@ -70,6 +70,7 @@ const KNOWN_MANIFEST_FIELDS = (() => {
     requiredBundles: true,
     supportedOSDataSourceVersions: true,
     requiredOSDataSourcePlugins: true,
+    mfe: true,
   };
 
   return new Set(Object.keys(manifestFields));
@@ -251,6 +252,7 @@ export async function parseManifest(
     requiredOSDataSourcePlugins: Array.isArray(manifest.requiredOSDataSourcePlugins)
       ? manifest.requiredOSDataSourcePlugins
       : [],
+    mfe: typeof manifest.mfe === 'boolean' ? manifest.mfe : false,
   };
 }
 

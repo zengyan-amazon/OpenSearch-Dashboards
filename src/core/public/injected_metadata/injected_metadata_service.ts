@@ -79,6 +79,10 @@ export interface InjectedMetadataParams {
     keyboardShortcuts: {
       enabled: boolean;
     };
+    mfePlugins?: Array<{
+      pluginId: string;
+      remoteEntryUrl: string;
+    }>;
   };
 }
 

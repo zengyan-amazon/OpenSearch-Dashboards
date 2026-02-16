@@ -74,5 +74,10 @@ exports.externals = {
    * runtime deps which don't need to be copied across all bundles
    */
   tslib: '__osdSharedDeps__.TsLib',
+
+  /**
+   * Module Federation runtime for MFE support
+   */
+  '@module-federation/runtime': '__osdSharedDeps__.ModuleFederationRuntime',
 };
 exports.publicPathLoader = require.resolve('./public_path_loader');

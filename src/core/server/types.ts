@@ -33,5 +33,6 @@ export { PluginOpaqueId } from './plugins/types';
 export * from './saved_objects/types';
 export * from './ui_settings/types';
 export * from './legacy/types';
+export * from './types/nav_group';
 export type { EnvironmentMode, PackageInfo } from '@osd/config';
 export { Branding } from '../../core/types';

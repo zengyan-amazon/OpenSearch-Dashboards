@@ -79,6 +79,10 @@ export interface RenderingMetadata {
     keyboardShortcuts: {
       enabled: boolean;
     };
+    mfePlugins?: Array<{
+      pluginId: string;
+      remoteEntryUrl: string;
+    }>;
   };
 }
 

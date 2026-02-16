@@ -68,12 +68,16 @@ export class RenderingService {
     uiPlugins,
     dynamicConfig,
   }: RenderingSetupDeps): Promise<InternalRenderingServiceSetup> {
-    const [opensearchDashboardsConfig, serverConfig] = await Promise.all([
+    const [opensearchDashboardsConfig, serverConfig, mfeConfig] = await Promise.all([
       this.coreContext.configService
         .atPath<OpenSearchDashboardsConfigType>('opensearchDashboards')
         .pipe(first())
         .toPromise(),
       this.coreContext.configService.atPath<HttpConfigType>('server').pipe(first()).toPromise(),
+      this.coreContext.configService
+        .atPath<any>('mfe')
+        .pipe(first())
+        .toPromise(),
     ]);
 
     this.setupHttpAgent(serverConfig as HttpConfigType);
@@ -172,6 +176,11 @@ export class RenderingService {
             keyboardShortcuts: {
               enabled: opensearchDashboardsConfig.keyboardShortcuts.enabled,
             },
+            mfePlugins: mfeConfig?.enabled ?
+              [...uiPlugins.internal].filter(([, plugin]) => plugin.mfe === true).map(([id]) => ({
+                pluginId: id,
+                remoteEntryUrl: `${basePath}/${env.packageInfo.buildNum}/bundles/plugin/${id}/mfe/remoteEntry.js`,
+              })) : undefined,
           },
         };
 

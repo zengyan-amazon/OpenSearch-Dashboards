@@ -132,11 +132,16 @@ export function uiRenderMixin(osdServer, server, config) {
       const buildHash = server.newPlatform.env.packageInfo.buildNum;
       const basePath = config.get('server.basePath');
 
+      // Get MFE config
+      const mfeConfig = config.get('mfe');
+      const mfeEnabled = mfeConfig && mfeConfig.enabled;
+
       const regularBundlePath = `${basePath}/${buildHash}/bundles`;
 
       const kpUiPlugins = osdServer.newPlatform.__internals.uiPlugins;
       const kpPluginPublicPaths = new Map();
       const kpPluginBundlePaths = new Set();
+      const mfeRemoteEntries = [];
 
       // recursively iterate over the kpUiPlugin ids and their required bundles
       // to populate kpPluginPublicPaths and kpPluginBundlePaths
@@ -147,16 +152,49 @@ export function uiRenderMixin(osdServer, server, config) {
           }
 
           kpPluginPublicPaths.set(id, `${regularBundlePath}/plugin/${id}/`);
-          kpPluginBundlePaths.add(`${regularBundlePath}/plugin/${id}/${id}.plugin.js`);
+
+          // Check if this plugin is MFE-enabled
+          const pluginInfo = kpUiPlugins.internal.get(id);
+          const isMfePlugin = pluginInfo && pluginInfo.mfe === true;
+
+          if (mfeEnabled && isMfePlugin) {
+            // MFE-enabled plugin - add to remote entries
+            mfeRemoteEntries.push({
+              id: id,
+              entry: `${regularBundlePath}/plugin/${id}/mfe/remoteEntry.js`,
+              fallbackUrl: `${regularBundlePath}/plugin/${id}/${id}.plugin.js`,
+              mfeDeps: pluginInfo.requiredBundles || []
+            });
+          } else {
+            // Traditional plugin - add to JS dependency paths
+            kpPluginBundlePaths.add(`${regularBundlePath}/plugin/${id}/${id}.plugin.js`);
+          }
+
           readKpPlugins(kpUiPlugins.internal.get(id).requiredBundles);
         }
       })(kpUiPlugins.public.keys());
+
+      // Sort MFE remote entries in topological order based on dependencies
+      // This ensures plugins are loaded in the correct order
+      const sortedMfeRemotes = mfeRemoteEntries.sort((a, b) => {
+        // If b depends on a, a should come first
+        if (b.mfeDeps.includes(a.id)) return -1;
+        // If a depends on b, b should come first
+        if (a.mfeDeps.includes(b.id)) return 1;
+        // Otherwise maintain original order
+        return 0;
+      });
 
       const jsDependencyPaths = [
         ...UiSharedDeps.jsDepFilenames.map(
           (filename) => `${regularBundlePath}/osd-ui-shared-deps/${filename}`
         ),
         `${regularBundlePath}/osd-ui-shared-deps/${UiSharedDeps.jsFilename}`,
+
+        // Include Module Federation runtime if MFE is enabled
+        // This would be built as part of the shared deps or separately
+        // For now, it's expected to be included in the shared deps bundle
+        // or loaded separately by the build system
 
         `${regularBundlePath}/core/core.entry.js`,
         ...kpPluginBundlePaths,
@@ -170,6 +208,9 @@ export function uiRenderMixin(osdServer, server, config) {
         ...Object.fromEntries(kpPluginPublicPaths),
       });
 
+      // Select template based on MFE mode
+      const templateName = mfeEnabled && sortedMfeRemotes.length > 0 ? 'bootstrap_mfe' : 'bootstrap';
+
       const bootstrap = new AppBootstrap({
         templateData: {
           jsDependencyPaths,
@@ -179,8 +220,9 @@ export function uiRenderMixin(osdServer, server, config) {
           UiSharedDeps,
           THEME_CSS_DIST_FILENAMES: JSON.stringify(UiSharedDeps.themeCssDistFilenames),
           KUI_CSS_DIST_FILENAMES: JSON.stringify(UiSharedDeps.kuiCssDistFilenames),
+          mfeRemoteEntries: JSON.stringify(sortedMfeRemotes),
         },
-      });
+      }, templateName);
 
       const body = await bootstrap.getJsFile();
       const etag = await bootstrap.getJsFileHash();

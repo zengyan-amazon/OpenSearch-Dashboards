@@ -262,6 +262,7 @@ export class PluginsService implements CoreService<PluginsServiceSetup, PluginsS
               requiredBundles: plugin.requiredBundles,
               publicTargetDir: Path.resolve(plugin.path, 'target/public'),
               publicAssetsDir: Path.resolve(plugin.path, 'public/assets'),
+              mfe: plugin.manifest.mfe,
             });
           }
 

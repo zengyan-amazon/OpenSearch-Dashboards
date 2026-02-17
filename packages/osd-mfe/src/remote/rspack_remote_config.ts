@@ -158,6 +158,7 @@ export function getMfeRemoteConfig(options: MfeRemoteBuildOptions): Configuratio
                   @import '@elastic/eui/src/global_styling/variables/index';
                   @import '@elastic/eui/src/global_styling/mixins/index';
                   @import 'src/core/public/variables';
+                  @import 'src/core/public/core_app/styles/mixins';
                 `,
               },
             },
@@ -205,7 +206,9 @@ export function getMfeRemoteConfig(options: MfeRemoteBuildOptions): Configuratio
     resolve: {
       extensions: ['.js', '.ts', '.tsx', '.json'],
       mainFields: ['browser', 'module', 'main'],
-      alias: {},
+      alias: {
+        core_app_image_assets: Path.resolve(repoRoot, 'src/core/public/core_app/images'),
+      },
       fallback: {
         // Node.js built-ins that browser doesn't have
         path: require.resolve('path-browserify'),
